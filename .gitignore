@@ -1,0 +1,25 @@
+# macOS
+.DS_Store
+
+# Local machine configuration
+local.properties
+
+# IDE state
+.idea/
+*.iml
+
+# Gradle and Kotlin generated files
+**/.gradle/
+**/.kotlin/
+**/build/
+
+# Android generated files
+**/captures/
+**/.externalNativeBuild/
+**/.cxx/
+*.apk
+*.ap_
+*.aab
+*.dex
+*.hprof
+hs_err_pid*
