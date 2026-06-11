@@ -9,7 +9,6 @@ import org.junit.Test
 
 /** UI tests for [me.cniekirk.trainy.ui.main.MainScreen]. */
 class MainScreenTest {
-
     @get:Rule val composeTestRule = createAndroidComposeRule<ComponentActivity>()
 
     @Before

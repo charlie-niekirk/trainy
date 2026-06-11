@@ -14,6 +14,7 @@ dependencies {
     implementation(libs.kotlin.gradle.plugin)
     implementation(libs.ksp.gradle.plugin)
     implementation(libs.metro.gradle.plugin)
+    implementation(libs.spotless.gradle.plugin)
 }
 
 gradlePlugin {
@@ -41,6 +42,10 @@ gradlePlugin {
         register("room") {
             id = "trainy.room"
             implementationClass = "me.cniekirk.trainy.RoomConventionPlugin"
+        }
+        register("spotless") {
+            id = "trainy.spotless"
+            implementationClass = "me.cniekirk.trainy.SpotlessConventionPlugin"
         }
     }
 }

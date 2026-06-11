@@ -13,12 +13,13 @@ import okhttp3.ResponseBody.Companion.toResponseBody
 
 @BindingContainer
 object BenchmarkNetworkBindings {
-
     @Provides
     @SingleIn(AppScope::class)
-    fun provideOkHttpClient(): OkHttpClient = OkHttpClient.Builder()
-        .addInterceptor(MockRttProxyInterceptor)
-        .build()
+    fun provideOkHttpClient(): OkHttpClient =
+        OkHttpClient
+            .Builder()
+            .addInterceptor(MockRttProxyInterceptor)
+            .build()
 }
 
 private object MockRttProxyInterceptor : Interceptor {
@@ -27,19 +28,21 @@ private object MockRttProxyInterceptor : Interceptor {
     override fun intercept(chain: Interceptor.Chain): Response {
         val request = chain.request()
         val path = request.url.encodedPath
-        val body = when {
-            request.method == "POST" && path == "/v1/client-tokens" -> clientTokenJson
-            request.method == "GET" && path == "/v1/stops" -> stopsJson
-            request.method == "GET" && path.startsWith("/v1/boards/") -> cachedDataJson
-            request.method == "GET" && path.startsWith("/v1/services/") -> cachedDataJson
-            request.method == "GET" && path == "/v1/meta" -> metaJson
-            request.method == "GET" && path == "/health/live" -> healthJson
-            request.method == "GET" && path == "/health/ready" -> healthJson
-            else -> notFoundJson
-        }
-        val statusCode = if (body == notFoundJson) 404 else 200
+        val body =
+            when {
+                request.method == "POST" && path == "/v1/client-tokens" -> CLIENT_TOKEN_JSON
+                request.method == "GET" && path == "/v1/stops" -> STOPS_JSON
+                request.method == "GET" && path.startsWith("/v1/boards/") -> CACHED_DATA_JSON
+                request.method == "GET" && path.startsWith("/v1/services/") -> CACHED_DATA_JSON
+                request.method == "GET" && path == "/v1/meta" -> META_JSON
+                request.method == "GET" && path == "/health/live" -> HEALTH_JSON
+                request.method == "GET" && path == "/health/ready" -> HEALTH_JSON
+                else -> NOT_FOUND_JSON
+            }
+        val statusCode = if (body == NOT_FOUND_JSON) 404 else 200
 
-        return Response.Builder()
+        return Response
+            .Builder()
             .request(request)
             .protocol(Protocol.HTTP_1_1)
             .code(statusCode)
@@ -49,7 +52,7 @@ private object MockRttProxyInterceptor : Interceptor {
     }
 }
 
-private const val clientTokenJson = """
+private const val CLIENT_TOKEN_JSON = """
     {
       "token": "benchmark-token",
       "tokenType": "Bearer",
@@ -57,7 +60,7 @@ private const val clientTokenJson = """
     }
 """
 
-private const val stopsJson = """
+private const val STOPS_JSON = """
     {
       "data": [
         {
@@ -75,7 +78,7 @@ private const val stopsJson = """
     }
 """
 
-private const val cachedDataJson = """
+private const val CACHED_DATA_JSON = """
     {
       "data": {},
       "meta": {
@@ -84,7 +87,7 @@ private const val cachedDataJson = """
     }
 """
 
-private const val metaJson = """
+private const val META_JSON = """
     {
       "data": {
         "apiVersion": "benchmark",
@@ -97,13 +100,13 @@ private const val metaJson = """
     }
 """
 
-private const val healthJson = """
+private const val HEALTH_JSON = """
     {
       "status": "ok"
     }
 """
 
-private const val notFoundJson = """
+private const val NOT_FOUND_JSON = """
     {
       "error": {
         "message": "No benchmark mock is registered for this request."

@@ -6,10 +6,11 @@ plugins {
 }
 
 val generatedOpenApiDir = layout.buildDirectory.dir("generated/openapi")
-val generatedOpenApiSources = layout.buildDirectory
-    .dir("generated/openapi/src/main/kotlin")
-    .get()
-    .asFile
+val generatedOpenApiSources =
+    layout.buildDirectory
+        .dir("generated/openapi/src/main/kotlin")
+        .get()
+        .asFile
 
 android {
     namespace = "me.cniekirk.trainy.core.network"
@@ -83,11 +84,11 @@ openApiGenerate {
     )
 }
 
-tasks.matching {
-    (it.name.startsWith("compile") && it.name.endsWith("Kotlin")) ||
-        (it.name.startsWith("extract") && it.name.endsWith("Annotations"))
-}
-    .configureEach {
+tasks
+    .matching {
+        (it.name.startsWith("compile") && it.name.endsWith("Kotlin")) ||
+            (it.name.startsWith("extract") && it.name.endsWith("Annotations"))
+    }.configureEach {
         dependsOn(tasks.named("openApiGenerate"))
     }
 
