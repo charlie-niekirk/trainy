@@ -5,7 +5,7 @@ plugins {
 }
 
 android {
-    namespace = "com.example.trainy.core.data"
+    namespace = "me.cniekirk.trainy.core.data"
 
     buildTypes {
         create("benchmarkRelease") {

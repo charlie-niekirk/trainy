@@ -4,7 +4,7 @@ plugins {
 }
 
 android {
-    namespace = "com.example.trainy.baselineprofile"
+    namespace = "me.cniekirk.trainy.baselineprofile"
     compileSdk = 36
 
     defaultConfig {

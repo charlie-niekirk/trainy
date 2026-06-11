@@ -7,10 +7,10 @@ plugins {
 }
 
 android {
-    namespace = "com.example.trainy"
+    namespace = "me.cniekirk.trainy"
 
     defaultConfig {
-        applicationId = "com.example.trainy"
+        applicationId = "me.cniekirk.trainy"
         versionCode = 1
         versionName = "1.0"
     }

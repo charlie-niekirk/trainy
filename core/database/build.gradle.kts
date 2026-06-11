@@ -5,7 +5,7 @@ plugins {
 }
 
 android {
-    namespace = "com.example.trainy.core.database"
+    namespace = "me.cniekirk.trainy.core.database"
 }
 
 dependencies {

@@ -5,7 +5,7 @@ plugins {
 }
 
 android {
-    namespace = "com.example.trainy.core.datastore"
+    namespace = "me.cniekirk.trainy.core.datastore"
 }
 
 dependencies {

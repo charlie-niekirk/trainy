@@ -1,4 +1,4 @@
-package com.example.trainy
+package me.cniekirk.trainy
 
 import org.gradle.api.Plugin
 import org.gradle.api.Project
