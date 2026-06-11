@@ -13,7 +13,6 @@ import retrofit2.http.Path
 import retrofit2.http.Query
 
 interface RttProxyApi {
-
     @POST("v1/client-tokens")
     suspend fun createClientToken(): ClientTokenResponse
 

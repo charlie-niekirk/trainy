@@ -23,9 +23,11 @@ fun MainScreen(
         MainScreenUiState.Loading -> {
             // Blank
         }
+
         is MainScreenUiState.Success -> {
             MainScreen(data = (state as MainScreenUiState.Success).data, modifier = modifier)
         }
+
         is MainScreenUiState.Error -> {
             Text("Error loading data: ${(state as MainScreenUiState.Error).throwable.message}")
         }
@@ -33,12 +35,18 @@ fun MainScreen(
 }
 
 @Composable
-internal fun MainScreen(data: List<String>, modifier: Modifier = Modifier) {
+internal fun MainScreen(
+    data: List<String>,
+    modifier: Modifier = Modifier,
+) {
     Column(modifier) { data.forEach { Greeting(it) } }
 }
 
 @Composable
-fun Greeting(name: String, modifier: Modifier = Modifier) {
+fun Greeting(
+    name: String,
+    modifier: Modifier = Modifier,
+) {
     Text(text = "Hello $name!", modifier = modifier)
 }
 

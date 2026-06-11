@@ -1,9 +1,9 @@
 package me.cniekirk.trainy.core.network.source
 
+import dev.zacsweers.metro.Inject
 import me.cniekirk.trainy.core.network.generated.model.HealthResponse
 import me.cniekirk.trainy.core.network.generated.model.MetaResponse
 import me.cniekirk.trainy.core.network.retrofit.RttProxyApi
-import dev.zacsweers.metro.Inject
 
 @Inject
 class RetrofitRttProxyStatusNetworkDataSource(

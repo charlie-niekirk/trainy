@@ -8,31 +8,32 @@ import org.gradle.kotlin.dsl.configure
 import org.jetbrains.kotlin.gradle.dsl.KotlinAndroidProjectExtension
 
 class AndroidLibraryConventionPlugin : Plugin<Project> {
-    override fun apply(target: Project) = with(target) {
-        pluginManager.apply("com.android.library")
+    override fun apply(target: Project) =
+        with(target) {
+            pluginManager.apply("com.android.library")
 
-        extensions.configure<LibraryExtension> {
-            compileSdk = 36
+            extensions.configure<LibraryExtension> {
+                compileSdk = 36
 
-            defaultConfig {
-                minSdk = 24
-                testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+                defaultConfig {
+                    minSdk = 24
+                    testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+                }
+
+                compileOptions {
+                    sourceCompatibility = JavaVersion.VERSION_17
+                    targetCompatibility = JavaVersion.VERSION_17
+                }
+
+                buildFeatures {
+                    aidl = false
+                    buildConfig = false
+                    shaders = false
+                }
             }
 
-            compileOptions {
-                sourceCompatibility = JavaVersion.VERSION_17
-                targetCompatibility = JavaVersion.VERSION_17
-            }
-
-            buildFeatures {
-                aidl = false
-                buildConfig = false
-                shaders = false
+            extensions.configure<KotlinAndroidProjectExtension> {
+                jvmToolchain(17)
             }
         }
-
-        extensions.configure<KotlinAndroidProjectExtension> {
-            jvmToolchain(17)
-        }
-    }
 }

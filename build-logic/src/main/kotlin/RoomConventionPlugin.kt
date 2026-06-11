@@ -9,19 +9,20 @@ import org.gradle.kotlin.dsl.dependencies
 import org.gradle.kotlin.dsl.getByType
 
 class RoomConventionPlugin : Plugin<Project> {
-    override fun apply(target: Project) = with(target) {
-        pluginManager.apply("androidx.room")
-        pluginManager.apply("com.google.devtools.ksp")
+    override fun apply(target: Project) =
+        with(target) {
+            pluginManager.apply("androidx.room")
+            pluginManager.apply("com.google.devtools.ksp")
 
-        extensions.configure<RoomExtension> {
-            schemaDirectory("$projectDir/schemas")
-        }
+            extensions.configure<RoomExtension> {
+                schemaDirectory("$projectDir/schemas")
+            }
 
-        val libs = extensions.getByType<VersionCatalogsExtension>().named("libs")
-        dependencies {
-            add("implementation", libs.findLibrary("androidx.room.runtime").get())
-            add("implementation", libs.findLibrary("androidx.room.ktx").get())
-            add("ksp", libs.findLibrary("androidx.room.compiler").get())
+            val libs = extensions.getByType<VersionCatalogsExtension>().named("libs")
+            dependencies {
+                add("implementation", libs.findLibrary("androidx.room.runtime").get())
+                add("implementation", libs.findLibrary("androidx.room.ktx").get())
+                add("ksp", libs.findLibrary("androidx.room.compiler").get())
+            }
         }
-    }
 }

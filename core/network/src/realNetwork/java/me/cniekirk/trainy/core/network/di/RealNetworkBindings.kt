@@ -8,7 +8,6 @@ import okhttp3.OkHttpClient
 
 @BindingContainer
 object RealNetworkBindings {
-
     @Provides
     @SingleIn(AppScope::class)
     fun provideOkHttpClient(): OkHttpClient = OkHttpClient.Builder().build()

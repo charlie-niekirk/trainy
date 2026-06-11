@@ -29,7 +29,6 @@ android {
             matchingFallbacks += listOf("release")
         }
     }
-
 }
 
 baselineProfile {
