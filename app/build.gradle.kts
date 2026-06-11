@@ -1,8 +1,9 @@
 plugins {
-  id("trainy.android.application")
-  id("trainy.android.compose")
-  id("trainy.kotlin.serialization")
-  id("trainy.metro")
+    id("trainy.android.application")
+    id("trainy.android.compose")
+    id("trainy.kotlin.serialization")
+    id("trainy.metro")
+    alias(libs.plugins.androidx.baselineprofile)
 }
 
 android {
@@ -19,37 +20,58 @@ android {
             isMinifyEnabled = false
             proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
         }
+        create("benchmarkRelease") {
+            initWith(getByName("release"))
+            matchingFallbacks += listOf("release")
+        }
+        create("nonMinifiedRelease") {
+            initWith(getByName("release"))
+            matchingFallbacks += listOf("release")
+        }
+    }
+
+}
+
+baselineProfile {
+    automaticGenerationDuringBuild = false
+    saveInSrc = true
+    variants {
+        create("release") {
+            mergeIntoMain = true
+        }
     }
 }
 
 dependencies {
-  implementation(project(":core:data"))
+    implementation(project(":core:data"))
 
-  // Core Android dependencies
-  implementation(libs.androidx.core.ktx)
-  implementation(libs.androidx.lifecycle.runtime.ktx)
-  implementation(libs.androidx.activity.compose)
+    // Core Android dependencies
+    implementation(libs.androidx.core.ktx)
+    implementation(libs.androidx.lifecycle.runtime.ktx)
+    implementation(libs.androidx.activity.compose)
 
-  // Arch Components
-  implementation(libs.androidx.lifecycle.runtime.compose)
-  implementation(libs.androidx.lifecycle.viewmodel.compose)
+    // Arch Components
+    implementation(libs.androidx.lifecycle.runtime.compose)
+    implementation(libs.androidx.lifecycle.viewmodel.compose)
 
-  // Local tests: jUnit, coroutines, Android runner
-  testImplementation(libs.junit)
-  testImplementation(libs.kotlinx.coroutines.test)
+    // Local tests: jUnit, coroutines, Android runner
+    testImplementation(libs.junit)
+    testImplementation(libs.kotlinx.coroutines.test)
 
-  // Instrumented tests: jUnit rules and runners
-  androidTestImplementation(libs.androidx.test.core)
-  androidTestImplementation(libs.androidx.test.ext.junit)
-  androidTestImplementation(libs.androidx.test.runner)
-  androidTestImplementation(libs.androidx.test.espresso.core)
+    // Instrumented tests: jUnit rules and runners
+    androidTestImplementation(libs.androidx.test.core)
+    androidTestImplementation(libs.androidx.test.ext.junit)
+    androidTestImplementation(libs.androidx.test.runner)
+    androidTestImplementation(libs.androidx.test.espresso.core)
 
-  // Navigation
-  implementation(libs.androidx.navigation3.ui)
-  implementation(libs.androidx.navigation3.runtime)
-  implementation(libs.androidx.lifecycle.viewmodel.navigation3)
+    // Navigation
+    implementation(libs.androidx.navigation3.ui)
+    implementation(libs.androidx.navigation3.runtime)
+    implementation(libs.androidx.lifecycle.viewmodel.navigation3)
 
-  // MVI
-  implementation(libs.orbit.viewmodel)
-  implementation(libs.orbit.compose)
+    // MVI
+    implementation(libs.orbit.viewmodel)
+    implementation(libs.orbit.compose)
+
+    baselineProfile(project(":baselineprofile"))
 }

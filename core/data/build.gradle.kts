@@ -6,6 +6,17 @@ plugins {
 
 android {
     namespace = "com.example.trainy.core.data"
+
+    buildTypes {
+        create("benchmarkRelease") {
+            initWith(getByName("release"))
+            matchingFallbacks += listOf("release")
+        }
+        create("nonMinifiedRelease") {
+            initWith(getByName("release"))
+            matchingFallbacks += listOf("release")
+        }
+    }
 }
 
 dependencies {

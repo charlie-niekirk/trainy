@@ -33,6 +33,7 @@ plugins {
 
 rootProject.name = "trainy"
 include(":app")
+include(":baselineprofile")
 include(":core:network")
 include(":core:database")
 include(":core:datastore")
