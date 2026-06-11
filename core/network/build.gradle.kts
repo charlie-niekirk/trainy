@@ -12,7 +12,7 @@ val generatedOpenApiSources = layout.buildDirectory
     .asFile
 
 android {
-    namespace = "com.example.trainy.core.network"
+    namespace = "me.cniekirk.trainy.core.network"
 
     buildTypes {
         create("benchmarkRelease") {
@@ -48,8 +48,8 @@ openApiGenerate {
     generatorName.set("kotlin")
     inputSpec.set("https://api.cniekirk.online/docs/json")
     outputDir.set(generatedOpenApiDir)
-    packageName.set("com.example.trainy.core.network.generated")
-    modelPackage.set("com.example.trainy.core.network.generated.model")
+    packageName.set("me.cniekirk.trainy.core.network.generated")
+    modelPackage.set("me.cniekirk.trainy.core.network.generated.model")
     typeMappings.set(
         mapOf(
             "AnyType" to "JsonElement",

@@ -1,4 +1,4 @@
-package com.example.trainy
+package me.cniekirk.trainy
 
 import androidx.room.gradle.RoomExtension
 import org.gradle.api.Plugin

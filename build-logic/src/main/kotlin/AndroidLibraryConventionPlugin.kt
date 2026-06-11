@@ -1,4 +1,4 @@
-package com.example.trainy
+package me.cniekirk.trainy
 
 import com.android.build.api.dsl.LibraryExtension
 import org.gradle.api.JavaVersion
