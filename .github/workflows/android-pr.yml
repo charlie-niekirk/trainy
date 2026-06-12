@@ -1,0 +1,193 @@
+name: Android PR
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, ready_for_review]
+
+concurrency:
+  group: android-pr-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  affected-unit-tests:
+    name: Affected unit tests
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: read
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+
+      - name: Set up JDK
+        uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: 21
+
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@v6
+
+      - name: Determine affected unit test tasks
+        id: affected
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+        run: |
+          tasks="$(.github/scripts/affected-unit-test-tasks.sh "$BASE_SHA" "$HEAD_SHA")"
+          echo "tasks=$tasks" >> "$GITHUB_OUTPUT"
+
+      - name: Run affected unit tests
+        if: steps.affected.outputs.tasks != ''
+        run: ./gradlew ${{ steps.affected.outputs.tasks }}
+
+      - name: No affected unit tests
+        if: steps.affected.outputs.tasks == ''
+        run: echo "No Gradle module diffs detected; skipping unit tests."
+
+  build-signed-apk:
+    name: Build signed APK
+    runs-on: ubuntu-24.04
+    permissions:
+      actions: read
+      contents: read
+      issues: write
+      pull-requests: read
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Set up JDK
+        uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: 21
+
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@v6
+
+      - name: Build debug-signed APK
+        run: ./gradlew :app:assembleDebug
+
+      - name: Prepare APK artifact
+        id: apk
+        env:
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+        run: |
+          short_sha="${HEAD_SHA:0:7}"
+          apk_name="trainy-pr-${PR_NUMBER}-${short_sha}.apk"
+          cp app/build/outputs/apk/debug/app-debug.apk "$apk_name"
+          echo "path=$apk_name" >> "$GITHUB_OUTPUT"
+          echo "name=$apk_name" >> "$GITHUB_OUTPUT"
+
+      - name: Verify APK signature
+        run: |
+          "$ANDROID_HOME/build-tools/36.0.0/apksigner" verify --verbose "${{ steps.apk.outputs.path }}"
+
+      - name: Upload APK
+        id: upload
+        uses: actions/upload-artifact@v7
+        with:
+          path: ${{ steps.apk.outputs.path }}
+          if-no-files-found: error
+          retention-days: 14
+          archive: false
+
+      - name: Update PR APK comment
+        uses: actions/github-script@v9
+        env:
+          APK_NAME: ${{ steps.apk.outputs.name }}
+          ARTIFACT_URL: ${{ steps.upload.outputs.artifact-url }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        with:
+          script: |
+            const marker = '<!-- trainy-pr-apk -->';
+            const shortSha = process.env.HEAD_SHA.slice(0, 7);
+            const body = [
+              marker,
+              '### Android PR APK',
+              '',
+              `[Download ${process.env.APK_NAME}](${process.env.ARTIFACT_URL})`,
+              '',
+              `Commit: \`${shortSha}\``,
+              `Workflow run: ${process.env.RUN_URL}`,
+              'Artifact retention: 14 days',
+            ].join('\n');
+
+            const issue_number = context.payload.pull_request.number;
+            const comments = await github.paginate(github.rest.issues.listComments, {
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number,
+              per_page: 100,
+            });
+
+            const existing = comments.find((comment) => comment.body?.includes(marker));
+            if (existing) {
+              await github.rest.issues.updateComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                comment_id: existing.id,
+                body,
+              });
+            } else {
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number,
+                body,
+              });
+            }
+
+      - name: Update PR APK comment on failure
+        if: failure()
+        uses: actions/github-script@v9
+        env:
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        with:
+          script: |
+            const marker = '<!-- trainy-pr-apk -->';
+            const shortSha = process.env.HEAD_SHA.slice(0, 7);
+            const body = [
+              marker,
+              '### Android PR APK',
+              '',
+              'APK build failed; no download artifact was produced for this commit.',
+              '',
+              `Commit: \`${shortSha}\``,
+              `Workflow run: ${process.env.RUN_URL}`,
+            ].join('\n');
+
+            const issue_number = context.payload.pull_request.number;
+            const comments = await github.paginate(github.rest.issues.listComments, {
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number,
+              per_page: 100,
+            });
+
+            const existing = comments.find((comment) => comment.body?.includes(marker));
+            if (existing) {
+              await github.rest.issues.updateComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                comment_id: existing.id,
+                body,
+              });
+            } else {
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number,
+                body,
+              });
+            }
