@@ -1,0 +1,100 @@
+name: Android PR
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, ready_for_review]
+
+concurrency:
+  group: android-pr-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  affected-unit-tests:
+    name: Affected unit tests
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: read
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+
+      - name: Set up JDK
+        uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: 21
+
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@v6
+
+      - name: Determine affected unit test tasks
+        id: affected
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+        run: |
+          tasks="$(.github/scripts/affected-unit-test-tasks.sh "$BASE_SHA" "$HEAD_SHA")"
+          echo "tasks=$tasks" >> "$GITHUB_OUTPUT"
+
+      - name: Run affected unit tests
+        if: steps.affected.outputs.tasks != ''
+        run: ./gradlew ${{ steps.affected.outputs.tasks }}
+
+      - name: No affected unit tests
+        if: steps.affected.outputs.tasks == ''
+        run: echo "No Gradle module diffs detected; skipping unit tests."
+
+  build-signed-apk:
+    name: Build signed APK
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: read
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Set up JDK
+        uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: 21
+
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@v6
+
+      - name: Build debug-signed APK
+        run: ./gradlew :app:assembleDebug
+
+      - name: Prepare APK artifact
+        id: apk
+        env:
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+        run: |
+          short_sha="${HEAD_SHA:0:7}"
+          apk_name="trainy-pr-${PR_NUMBER}-${short_sha}.apk"
+          artifact_name="trainy-pr-${PR_NUMBER}-${short_sha}"
+          cp app/build/outputs/apk/debug/app-debug.apk "$apk_name"
+          echo "path=$apk_name" >> "$GITHUB_OUTPUT"
+          echo "name=$apk_name" >> "$GITHUB_OUTPUT"
+          echo "artifact_name=$artifact_name" >> "$GITHUB_OUTPUT"
+
+      - name: Verify APK signature
+        run: |
+          "$ANDROID_HOME/build-tools/36.0.0/apksigner" verify --verbose "${{ steps.apk.outputs.path }}"
+
+      - name: Upload APK
+        uses: actions/upload-artifact@v7
+        with:
+          name: ${{ steps.apk.outputs.artifact_name }}
+          path: ${{ steps.apk.outputs.path }}
+          if-no-files-found: error
+          retention-days: 14
+          archive: false
