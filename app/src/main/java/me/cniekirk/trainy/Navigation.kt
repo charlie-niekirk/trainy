@@ -1,27 +1,61 @@
 package me.cniekirk.trainy
 
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.safeDrawingPadding
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.material3.Icon
+import androidx.compose.material3.Text
+import androidx.compose.material3.adaptive.navigationsuite.NavigationSuiteScaffold
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
 import androidx.navigation3.runtime.entryProvider
-import androidx.navigation3.runtime.rememberNavBackStack
 import androidx.navigation3.ui.NavDisplay
-import me.cniekirk.trainy.ui.main.MainScreen
+import me.cniekirk.trainy.feature.favourites.favouritesEntry
+import me.cniekirk.trainy.feature.search.searchEntry
+import me.cniekirk.trainy.feature.settings.settingsEntry
+import me.cniekirk.trainy.feature.stationsearch.StationSearchRoute
+import me.cniekirk.trainy.feature.stationsearch.stationSearchEntry
+import me.cniekirk.trainy.navigation.AppNavigator
+import me.cniekirk.trainy.navigation.TopLevelDestinations
+import me.cniekirk.trainy.navigation.rememberAppNavigationState
 
 @Composable
-fun MainNavigation() {
-    val backStack = rememberNavBackStack(Main)
+fun MainNavigation(modifier: Modifier = Modifier) {
+    val navigationState =
+        rememberAppNavigationState(
+            startRoute = TopLevelDestinations.first().route,
+            topLevelRoutes = TopLevelDestinations.map { it.route }.toSet(),
+        )
+    val navigator = remember(navigationState) { AppNavigator(navigationState) }
+    val entryProvider =
+        entryProvider {
+            searchEntry(onStationSearchClick = { navigator.navigate(StationSearchRoute) })
+            favouritesEntry()
+            settingsEntry()
+            stationSearchEntry(onBackClick = navigator::goBack)
+        }
 
-    NavDisplay(
-        backStack = backStack,
-        onBack = { backStack.removeLastOrNull() },
-        entryProvider =
-            entryProvider {
-                entry<Main> {
-                    MainScreen(onItemClick = { navKey -> backStack.add(navKey) }, modifier = Modifier.safeDrawingPadding().padding(16.dp))
-                }
-            },
-    )
+    NavigationSuiteScaffold(
+        modifier = modifier,
+        navigationSuiteItems = {
+            TopLevelDestinations.forEach { destination ->
+                item(
+                    selected = destination.route == navigationState.topLevelRoute,
+                    onClick = { navigator.navigate(destination.route) },
+                    icon = {
+                        Icon(
+                            imageVector = destination.icon,
+                            contentDescription = destination.label,
+                        )
+                    },
+                    label = { Text(destination.label) },
+                )
+            }
+        },
+    ) {
+        NavDisplay(
+            entries = navigationState.toDecoratedEntries(entryProvider),
+            onBack = navigator::goBack,
+            modifier = Modifier.fillMaxSize(),
+        )
+    }
 }

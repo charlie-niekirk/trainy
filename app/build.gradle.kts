@@ -43,6 +43,10 @@ baselineProfile {
 
 dependencies {
     implementation(project(":core:data"))
+    implementation(project(":feature:favourites"))
+    implementation(project(":feature:search"))
+    implementation(project(":feature:settings"))
+    implementation(project(":feature:station-search"))
 
     // Core Android dependencies
     implementation(libs.androidx.core.ktx)
@@ -52,6 +56,8 @@ dependencies {
     // Arch Components
     implementation(libs.androidx.lifecycle.runtime.compose)
     implementation(libs.androidx.lifecycle.viewmodel.compose)
+    implementation(libs.androidx.compose.material3.adaptive.navigation.suite)
+    implementation(libs.androidx.compose.material.icons.core)
 
     // Local tests: jUnit, coroutines, Android runner
     testImplementation(libs.junit)
