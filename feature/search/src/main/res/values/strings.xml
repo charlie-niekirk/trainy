@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="search_title">Search</string>
+    <string name="search_mode_departing">Departing</string>
+    <string name="search_mode_arriving">Arriving</string>
+    <string name="search_target_departing_label">Departing from</string>
+    <string name="search_filter_departing_label">Going to (optional)</string>
+    <string name="search_target_arriving_label">Arriving at</string>
+    <string name="search_filter_arriving_label">Coming from (optional)</string>
+    <string name="search_date_label">Date</string>
+    <string name="search_date_placeholder">yyyy-MM-dd</string>
+    <string name="search_time_label">Time</string>
+    <string name="search_time_placeholder">HH:mm</string>
+    <string name="search_picker_confirm">OK</string>
+    <string name="search_picker_cancel">Cancel</string>
+    <string name="search_button">Search</string>
+    <string name="search_departure_board_title">Departure board</string>
+    <string name="search_back_button">Back</string>
+    <string name="search_error_enter_station">Enter a station</string>
+    <string name="search_error_invalid_date_time">Enter a valid date and time</string>
+</resources>
