@@ -7,9 +7,7 @@ import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface CachedTrainDao {
-    @Query("SELECT * FROM cached_trains")
-    fun observeAll(): Flow<List<CachedTrainEntity>>
+    @Query("SELECT * FROM cached_trains") fun observeAll(): Flow<List<CachedTrainEntity>>
 
-    @Upsert
-    suspend fun upsertAll(trains: List<CachedTrainEntity>)
+    @Upsert suspend fun upsertAll(trains: List<CachedTrainEntity>)
 }

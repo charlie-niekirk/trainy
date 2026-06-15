@@ -11,27 +11,26 @@ class SpotlessConventionPlugin : Plugin<Project> {
         with(target) {
             pluginManager.apply("com.diffplug.spotless")
 
-            val ktlintVersion =
+            val ktfmtVersion =
                 extensions
                     .findByType(VersionCatalogsExtension::class.java)
                     ?.named("libs")
-                    ?.findVersion("ktlint")
+                    ?.findVersion("ktfmt")
                     ?.map { it.requiredVersion }
-                    ?.orElse(DEFAULT_KTLINT_VERSION)
-                    ?: DEFAULT_KTLINT_VERSION
+                    ?.orElse(DEFAULT_KTFMT_VERSION) ?: DEFAULT_KTFMT_VERSION
 
             extensions.configure<SpotlessExtension> {
                 kotlin {
                     target(*kotlinTargets())
                     targetExclude("**/build/**/*.kt")
-                    ktlint(ktlintVersion).editorConfigOverride(KTLINT_EDITOR_CONFIG_OVERRIDES)
+                    ktfmt(ktfmtVersion).kotlinlangStyle()
                     trimTrailingWhitespace()
                     endWithNewline()
                 }
 
                 kotlinGradle {
                     target(*kotlinGradleTargets())
-                    ktlint(ktlintVersion).editorConfigOverride(KTLINT_EDITOR_CONFIG_OVERRIDES)
+                    ktfmt(ktfmtVersion).kotlinlangStyle()
                     trimTrailingWhitespace()
                     endWithNewline()
                 }
@@ -79,11 +78,6 @@ class SpotlessConventionPlugin : Plugin<Project> {
         }
 
     private companion object {
-        const val DEFAULT_KTLINT_VERSION = "1.8.0"
-        val KTLINT_EDITOR_CONFIG_OVERRIDES =
-            mapOf(
-                "ktlint_code_style" to "ktlint_official",
-                "ktlint_function_naming_ignore_when_annotated_with" to "Composable",
-            )
+        const val DEFAULT_KTFMT_VERSION = "0.63"
     }
 }

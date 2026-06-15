@@ -13,7 +13,6 @@ import me.cniekirk.trainy.feature.favourites.favouritesEntry
 import me.cniekirk.trainy.feature.search.departureBoardEntry
 import me.cniekirk.trainy.feature.search.searchEntry
 import me.cniekirk.trainy.feature.settings.settingsEntry
-import me.cniekirk.trainy.feature.stationsearch.StationSearchRoute
 import me.cniekirk.trainy.feature.stationsearch.stationSearchEntry
 import me.cniekirk.trainy.navigation.AppNavigator
 import me.cniekirk.trainy.navigation.TopLevelDestinations
@@ -27,14 +26,13 @@ fun MainNavigation(modifier: Modifier = Modifier) {
             topLevelRoutes = TopLevelDestinations.map { it.route }.toSet(),
         )
     val navigator = remember(navigationState) { AppNavigator(navigationState) }
-    val entryProvider =
-        entryProvider {
-            searchEntry(onSearchSubmitted = navigator::navigate)
-            favouritesEntry()
-            settingsEntry()
-            departureBoardEntry(onBackClick = navigator::goBack)
-            stationSearchEntry(onBackClick = navigator::goBack)
-        }
+    val entryProvider = entryProvider {
+        searchEntry(onSearchSubmitted = navigator::navigate)
+        favouritesEntry()
+        settingsEntry()
+        departureBoardEntry(onBackClick = navigator::goBack)
+        stationSearchEntry(onBackClick = navigator::goBack)
+    }
 
     NavigationSuiteScaffold(
         modifier = modifier,

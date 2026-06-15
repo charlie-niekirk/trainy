@@ -57,15 +57,14 @@ class AppNavigationState(
 
     @Composable
     fun toDecoratedEntries(entryProvider: (NavKey) -> NavEntry<NavKey>): List<NavEntry<NavKey>> {
-        val decoratedEntries =
-            backStacks.mapValues { (_, stack) ->
-                val decorators = listOf(rememberSaveableStateHolderNavEntryDecorator<NavKey>())
-                rememberDecoratedNavEntries(
-                    backStack = stack,
-                    entryDecorators = decorators,
-                    entryProvider = entryProvider,
-                )
-            }
+        val decoratedEntries = backStacks.mapValues { (_, stack) ->
+            val decorators = listOf(rememberSaveableStateHolderNavEntryDecorator<NavKey>())
+            rememberDecoratedNavEntries(
+                backStack = stack,
+                entryDecorators = decorators,
+                entryProvider = entryProvider,
+            )
+        }
 
         return stacksInUse.flatMap { decoratedEntries[it] ?: emptyList() }
     }

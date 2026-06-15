@@ -30,14 +30,23 @@ class AndroidComposeConventionPlugin : Plugin<Project> {
             val libs = extensions.getByType<VersionCatalogsExtension>().named("libs")
             dependencies {
                 add("implementation", platform(libs.findLibrary("androidx.compose.bom").get()))
-                add("androidTestImplementation", platform(libs.findLibrary("androidx.compose.bom").get()))
+                add(
+                    "androidTestImplementation",
+                    platform(libs.findLibrary("androidx.compose.bom").get()),
+                )
 
                 add("implementation", libs.findLibrary("androidx.compose.ui").get())
                 add("implementation", libs.findLibrary("androidx.compose.ui.tooling.preview").get())
                 add("implementation", libs.findLibrary("androidx.compose.material3").get())
                 add("debugImplementation", libs.findLibrary("androidx.compose.ui.tooling").get())
-                add("debugImplementation", libs.findLibrary("androidx.compose.ui.test.manifest").get())
-                add("androidTestImplementation", libs.findLibrary("androidx.compose.ui.test.junit4").get())
+                add(
+                    "debugImplementation",
+                    libs.findLibrary("androidx.compose.ui.test.manifest").get(),
+                )
+                add(
+                    "androidTestImplementation",
+                    libs.findLibrary("androidx.compose.ui.test.junit4").get(),
+                )
             }
         }
 }

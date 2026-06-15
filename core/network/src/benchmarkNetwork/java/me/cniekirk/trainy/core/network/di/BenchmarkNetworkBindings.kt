@@ -16,10 +16,7 @@ object BenchmarkNetworkBindings {
     @Provides
     @SingleIn(AppScope::class)
     fun provideOkHttpClient(): OkHttpClient =
-        OkHttpClient
-            .Builder()
-            .addInterceptor(MockRttProxyInterceptor)
-            .build()
+        OkHttpClient.Builder().addInterceptor(MockRttProxyInterceptor).build()
 }
 
 private object MockRttProxyInterceptor : Interceptor {
@@ -41,8 +38,7 @@ private object MockRttProxyInterceptor : Interceptor {
             }
         val statusCode = if (body == NOT_FOUND_JSON) 404 else 200
 
-        return Response
-            .Builder()
+        return Response.Builder()
             .request(request)
             .protocol(Protocol.HTTP_1_1)
             .code(statusCode)
@@ -52,7 +48,8 @@ private object MockRttProxyInterceptor : Interceptor {
     }
 }
 
-private const val CLIENT_TOKEN_JSON = """
+private const val CLIENT_TOKEN_JSON =
+    """
     {
       "token": "benchmark-token",
       "tokenType": "Bearer",
@@ -60,7 +57,8 @@ private const val CLIENT_TOKEN_JSON = """
     }
 """
 
-private const val STOPS_JSON = """
+private const val STOPS_JSON =
+    """
     {
       "data": [
         {
@@ -78,7 +76,8 @@ private const val STOPS_JSON = """
     }
 """
 
-private const val CACHED_DATA_JSON = """
+private const val CACHED_DATA_JSON =
+    """
     {
       "data": {},
       "meta": {
@@ -87,7 +86,8 @@ private const val CACHED_DATA_JSON = """
     }
 """
 
-private const val META_JSON = """
+private const val META_JSON =
+    """
     {
       "data": {
         "apiVersion": "benchmark",
@@ -100,13 +100,15 @@ private const val META_JSON = """
     }
 """
 
-private const val HEALTH_JSON = """
+private const val HEALTH_JSON =
+    """
     {
       "status": "ok"
     }
 """
 
-private const val NOT_FOUND_JSON = """
+private const val NOT_FOUND_JSON =
+    """
     {
       "error": {
         "message": "No benchmark mock is registered for this request."

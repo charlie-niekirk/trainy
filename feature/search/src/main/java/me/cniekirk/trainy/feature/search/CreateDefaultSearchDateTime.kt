@@ -7,5 +7,6 @@ class CreateDefaultSearchDateTime(
     private val formatter: SearchDateTimeFormatter,
     private val currentTimeProvider: CurrentTimeProvider,
 ) {
-    operator fun invoke(): SearchDateTime = formatter.format(currentTimeProvider.currentTimeMillis())
+    operator fun invoke(): SearchDateTime =
+        formatter.format(currentTimeProvider.currentTimeMillis())
 }

@@ -9,17 +9,13 @@ import org.junit.Rule
 import org.junit.Test
 
 class StartupBenchmarks {
-    @get:Rule
-    val benchmarkRule = MacrobenchmarkRule()
+    @get:Rule val benchmarkRule = MacrobenchmarkRule()
 
-    @Test
-    fun startupCompilationNone() = startup(CompilationMode.None())
+    @Test fun startupCompilationNone() = startup(CompilationMode.None())
 
     @Test
     fun startupCompilationBaselineProfiles() =
-        startup(
-            CompilationMode.Partial(BaselineProfileMode.Require),
-        )
+        startup(CompilationMode.Partial(BaselineProfileMode.Require))
 
     private fun startup(compilationMode: CompilationMode) =
         benchmarkRule.measureRepeated(

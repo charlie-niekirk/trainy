@@ -15,6 +15,7 @@ dependencies {
     implementation(libs.ksp.gradle.plugin)
     implementation(libs.metro.gradle.plugin)
     implementation(libs.spotless.gradle.plugin)
+    implementation(libs.detekt.gradle.plugin)
 }
 
 gradlePlugin {
@@ -46,6 +47,10 @@ gradlePlugin {
         register("spotless") {
             id = "trainy.spotless"
             implementationClass = "me.cniekirk.trainy.SpotlessConventionPlugin"
+        }
+        register("detekt") {
+            id = "trainy.detekt"
+            implementationClass = "me.cniekirk.trainy.DetektConventionPlugin"
         }
     }
 }

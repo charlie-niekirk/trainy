@@ -2,10 +2,10 @@ package me.cniekirk.trainy.feature.search
 
 import io.mockk.every
 import io.mockk.mockk
+import java.util.TimeZone
 import junit.framework.TestCase.assertEquals
 import junit.framework.TestCase.assertNull
 import org.junit.Test
-import java.util.TimeZone
 
 class SearchUseCasesTest {
     private val formatter = SearchDateTimeFormatter(timeZone = TimeZone.getTimeZone("UTC"))
@@ -35,7 +35,7 @@ class SearchUseCasesTest {
                     filterStation = "  Brighton ",
                     date = "2026-06-01",
                     time = "11:30",
-                ),
+                )
             )
 
         val search = (result as BuildDepartureBoardSearchResult.Success).search
@@ -54,7 +54,7 @@ class SearchUseCasesTest {
                     filterStation = " ",
                     date = "2026-06-01",
                     time = "11:30",
-                ),
+                )
             )
 
         val search = (result as BuildDepartureBoardSearchResult.Success).search
@@ -69,7 +69,7 @@ class SearchUseCasesTest {
                     targetStation = " ",
                     date = "2026-06-01",
                     time = "10:50",
-                ),
+                )
             )
 
         assertEquals(
@@ -86,7 +86,7 @@ class SearchUseCasesTest {
                     targetStation = "London Bridge",
                     date = "2026-99-01",
                     time = "10:50",
-                ),
+                )
             )
 
         assertEquals(

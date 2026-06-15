@@ -16,8 +16,7 @@ import androidx.navigation3.runtime.EntryProviderScope
 import androidx.navigation3.runtime.NavKey
 import kotlinx.serialization.Serializable
 
-@Serializable
-data object SettingsRoute : NavKey
+@Serializable data object SettingsRoute : NavKey
 
 fun EntryProviderScope<NavKey>.settingsEntry() {
     entry<SettingsRoute> {
@@ -28,11 +27,7 @@ fun EntryProviderScope<NavKey>.settingsEntry() {
 @Composable
 internal fun SettingsScreen(modifier: Modifier = Modifier) {
     Column(
-        modifier =
-            modifier
-                .fillMaxSize()
-                .safeDrawingPadding()
-                .padding(24.dp),
+        modifier = modifier.fillMaxSize().safeDrawingPadding().padding(24.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center,
     ) {
