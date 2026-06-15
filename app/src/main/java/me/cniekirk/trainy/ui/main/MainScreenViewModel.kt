@@ -10,24 +10,22 @@ import kotlinx.coroutines.flow.stateIn
 import me.cniekirk.trainy.data.DataRepository
 import me.cniekirk.trainy.ui.main.MainScreenUiState.Success
 
-class MainScreenViewModel(
-    dataRepository: DataRepository,
-) : ViewModel() {
+class MainScreenViewModel(dataRepository: DataRepository) : ViewModel() {
     val uiState: StateFlow<MainScreenUiState> =
         dataRepository.data
             .map<List<String>, MainScreenUiState>(::Success)
             .catch { emit(MainScreenUiState.Error(it)) }
-            .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), MainScreenUiState.Loading)
+            .stateIn(
+                viewModelScope,
+                SharingStarted.WhileSubscribed(5000),
+                MainScreenUiState.Loading,
+            )
 }
 
 sealed interface MainScreenUiState {
     object Loading : MainScreenUiState
 
-    data class Error(
-        val throwable: Throwable,
-    ) : MainScreenUiState
+    data class Error(val throwable: Throwable) : MainScreenUiState
 
-    data class Success(
-        val data: List<String>,
-    ) : MainScreenUiState
+    data class Success(val data: List<String>) : MainScreenUiState
 }

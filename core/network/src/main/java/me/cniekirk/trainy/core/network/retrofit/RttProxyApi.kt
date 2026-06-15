@@ -13,8 +13,7 @@ import retrofit2.http.Path
 import retrofit2.http.Query
 
 interface RttProxyApi {
-    @POST("v1/client-tokens")
-    suspend fun createClientToken(): ClientTokenResponse
+    @POST("v1/client-tokens") suspend fun createClientToken(): ClientTokenResponse
 
     @GET("v1/stops")
     suspend fun searchStops(
@@ -49,12 +48,9 @@ interface RttProxyApi {
         @Path("uniqueIdentity") uniqueIdentity: String,
     ): ServiceResponse
 
-    @GET("v1/meta")
-    suspend fun getMeta(): MetaResponse
+    @GET("v1/meta") suspend fun getMeta(): MetaResponse
 
-    @GET("health/live")
-    suspend fun getLiveHealth(): HealthResponse
+    @GET("health/live") suspend fun getLiveHealth(): HealthResponse
 
-    @GET("health/ready")
-    suspend fun getReadyHealth(): HealthResponse
+    @GET("health/ready") suspend fun getReadyHealth(): HealthResponse
 }

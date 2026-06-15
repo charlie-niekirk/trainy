@@ -12,8 +12,7 @@ object RetrofitFactory {
         okHttpClient: OkHttpClient = OkHttpClient.Builder().build(),
         json: Json = NetworkSerialization.json,
     ): Retrofit =
-        Retrofit
-            .Builder()
+        Retrofit.Builder()
             .baseUrl(baseUrl)
             .client(okHttpClient)
             .addConverterFactory(json.asConverterFactory("application/json".toMediaType()))

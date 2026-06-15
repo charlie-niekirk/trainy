@@ -13,6 +13,7 @@ pluginManagement {
         gradlePluginPortal()
     }
 }
+
 dependencyResolutionManagement {
     repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
     repositories {
@@ -32,13 +33,23 @@ plugins {
 }
 
 rootProject.name = "trainy"
+
 include(":app")
+
 include(":baselineprofile")
+
 include(":core:network")
+
 include(":core:database")
+
 include(":core:datastore")
+
 include(":core:data")
+
 include(":feature:favourites")
+
 include(":feature:search")
+
 include(":feature:settings")
+
 include(":feature:station-search")

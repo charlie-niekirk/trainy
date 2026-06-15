@@ -2,9 +2,7 @@ package me.cniekirk.trainy.navigation
 
 import androidx.navigation3.runtime.NavKey
 
-class AppNavigator(
-    private val state: AppNavigationState,
-) {
+class AppNavigator(private val state: AppNavigationState) {
     fun navigate(route: NavKey) {
         if (route in state.backStacks.keys) {
             state.topLevelRoute = route

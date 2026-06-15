@@ -53,7 +53,8 @@ class SearchViewModelTest {
                     dateTimeMillis = 1_780_313_400_000L,
                 )
             val buildDepartureBoardSearch = mockk<BuildDepartureBoardSearch>()
-            every { buildDepartureBoardSearch(any<SearchUiState>()) } returns BuildDepartureBoardSearchResult.Success(search)
+            every { buildDepartureBoardSearch(any<SearchUiState>()) } returns
+                BuildDepartureBoardSearchResult.Success(search)
             val viewModel = createViewModel(buildDepartureBoardSearch = buildDepartureBoardSearch)
             val sideEffect = async { viewModel.container.sideEffectFlow.first() }
 
@@ -63,9 +64,7 @@ class SearchViewModelTest {
             viewModel.onSearchClick().join()
 
             assertEquals(
-                SearchSideEffect.NavigateToDepartureBoard(
-                    DepartureBoardRoute(search),
-                ),
+                SearchSideEffect.NavigateToDepartureBoard(DepartureBoardRoute(search)),
                 sideEffect.await(),
             )
             verify { buildDepartureBoardSearch(any<SearchUiState>()) }
@@ -76,17 +75,23 @@ class SearchViewModelTest {
         runTest(mainDispatcherRule.testDispatcher) {
             val buildDepartureBoardSearch = mockk<BuildDepartureBoardSearch>()
             every { buildDepartureBoardSearch(any<SearchUiState>()) } returns
-                BuildDepartureBoardSearchResult.Error(targetStationError = SearchValidationError.BlankStation)
+                BuildDepartureBoardSearchResult.Error(
+                    targetStationError = SearchValidationError.BlankStation
+                )
             val viewModel = createViewModel(buildDepartureBoardSearch = buildDepartureBoardSearch)
 
             viewModel.onSearchClick().join()
 
-            assertEquals(SearchValidationError.BlankStation, viewModel.container.stateFlow.value.targetStationError)
+            assertEquals(
+                SearchValidationError.BlankStation,
+                viewModel.container.stateFlow.value.targetStationError,
+            )
             verify { buildDepartureBoardSearch(any<SearchUiState>()) }
         }
 
     private fun createViewModel(
-        createDefaultSearchDateTime: CreateDefaultSearchDateTime = mockCreateDefaultSearchDateTime(),
+        createDefaultSearchDateTime: CreateDefaultSearchDateTime =
+            mockCreateDefaultSearchDateTime(),
         buildDepartureBoardSearch: BuildDepartureBoardSearch = mockBuildDepartureBoardSearch(),
     ): SearchViewModel =
         SearchViewModel(
@@ -109,7 +114,7 @@ class SearchViewModelTest {
                     targetStation = "London Bridge",
                     filterStation = null,
                     dateTimeMillis = 1_780_313_400_000L,
-                ),
+                )
             )
         return buildDepartureBoardSearch
     }

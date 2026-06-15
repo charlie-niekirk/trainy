@@ -7,12 +7,12 @@ import java.util.Date
 import java.util.Locale
 import java.util.TimeZone
 
-class SearchDateTimeFormatter internal constructor(
+class SearchDateTimeFormatter
+internal constructor(
     private val locale: Locale = Locale.UK,
     private val timeZone: TimeZone = TimeZone.getDefault(),
 ) {
-    @Inject
-    constructor() : this(Locale.UK, TimeZone.getDefault())
+    @Inject constructor() : this(Locale.UK, TimeZone.getDefault())
 
     fun format(timestampMillis: Long): SearchDateTime =
         SearchDateTime(

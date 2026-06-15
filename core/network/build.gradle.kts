@@ -7,10 +7,7 @@ plugins {
 
 val generatedOpenApiDir = layout.buildDirectory.dir("generated/openapi")
 val generatedOpenApiSources =
-    layout.buildDirectory
-        .dir("generated/openapi/src/main/kotlin")
-        .get()
-        .asFile
+    layout.buildDirectory.dir("generated/openapi/src/main/kotlin").get().asFile
 
 android {
     namespace = "me.cniekirk.trainy.core.network"
@@ -55,13 +52,13 @@ openApiGenerate {
         mapOf(
             "AnyType" to "JsonElement",
             "object" to "JsonObject",
-        ),
+        )
     )
     importMappings.set(
         mapOf(
             "JsonElement" to "kotlinx.serialization.json.JsonElement",
             "JsonObject" to "kotlinx.serialization.json.JsonObject",
-        ),
+        )
     )
     generateApiTests.set(false)
     generateModelTests.set(false)
@@ -72,7 +69,7 @@ openApiGenerate {
             "apis" to "false",
             "models" to "",
             "supportingFiles" to "false",
-        ),
+        )
     )
     configOptions.set(
         mapOf(
@@ -80,7 +77,7 @@ openApiGenerate {
             "enumPropertyNaming" to "UPPERCASE",
             "serializationLibrary" to "kotlinx_serialization",
             "sourceFolder" to "src/main/kotlin",
-        ),
+        )
     )
 }
 
@@ -88,7 +85,8 @@ tasks
     .matching {
         (it.name.startsWith("compile") && it.name.endsWith("Kotlin")) ||
             (it.name.startsWith("extract") && it.name.endsWith("Annotations"))
-    }.configureEach {
+    }
+    .configureEach {
         dependsOn(tasks.named("openApiGenerate"))
     }
 

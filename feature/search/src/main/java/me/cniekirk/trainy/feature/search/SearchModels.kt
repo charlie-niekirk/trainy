@@ -37,31 +37,19 @@ enum class SearchValidationError {
 }
 
 internal sealed interface SearchAction {
-    data class ModeSelected(
-        val mode: SearchMode,
-    ) : SearchAction
+    data class ModeSelected(val mode: SearchMode) : SearchAction
 
-    data class TargetStationChanged(
-        val value: String,
-    ) : SearchAction
+    data class TargetStationChanged(val value: String) : SearchAction
 
-    data class FilterStationChanged(
-        val value: String,
-    ) : SearchAction
+    data class FilterStationChanged(val value: String) : SearchAction
 
-    data class DateChanged(
-        val value: String,
-    ) : SearchAction
+    data class DateChanged(val value: String) : SearchAction
 
-    data class TimeChanged(
-        val value: String,
-    ) : SearchAction
+    data class TimeChanged(val value: String) : SearchAction
 
     data object SearchClicked : SearchAction
 }
 
 sealed interface SearchSideEffect {
-    data class NavigateToDepartureBoard(
-        val route: DepartureBoardRoute,
-    ) : SearchSideEffect
+    data class NavigateToDepartureBoard(val route: DepartureBoardRoute) : SearchSideEffect
 }

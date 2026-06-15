@@ -20,19 +20,13 @@ import retrofit2.Retrofit
 
 private const val RTT_PROXY_BASE_URL = "https://api.cniekirk.online/"
 
-@Qualifier
-@Retention(AnnotationRetention.RUNTIME)
-annotation class RttProxyBaseUrl
+@Qualifier @Retention(AnnotationRetention.RUNTIME) annotation class RttProxyBaseUrl
 
 @BindingContainer
 object NetworkBindings {
-    @Provides
-    @RttProxyBaseUrl
-    fun provideRttProxyBaseUrl(): String = RTT_PROXY_BASE_URL
+    @Provides @RttProxyBaseUrl fun provideRttProxyBaseUrl(): String = RTT_PROXY_BASE_URL
 
-    @Provides
-    @SingleIn(AppScope::class)
-    fun provideNetworkJson(): Json = NetworkSerialization.json
+    @Provides @SingleIn(AppScope::class) fun provideNetworkJson(): Json = NetworkSerialization.json
 
     @Provides
     @SingleIn(AppScope::class)
@@ -49,15 +43,21 @@ object NetworkBindings {
 
     @Provides
     @SingleIn(AppScope::class)
-    fun provideRttProxyApi(retrofit: Retrofit): RttProxyApi = retrofit.create(RttProxyApi::class.java)
+    fun provideRttProxyApi(retrofit: Retrofit): RttProxyApi =
+        retrofit.create(RttProxyApi::class.java)
 
     @Provides
-    fun provideClientTokensNetworkDataSource(dataSource: RetrofitClientTokensNetworkDataSource): ClientTokensNetworkDataSource = dataSource
+    fun provideClientTokensNetworkDataSource(
+        dataSource: RetrofitClientTokensNetworkDataSource
+    ): ClientTokensNetworkDataSource = dataSource
 
     @Provides
-    fun provideJourneyDataNetworkDataSource(dataSource: RetrofitJourneyDataNetworkDataSource): JourneyDataNetworkDataSource = dataSource
+    fun provideJourneyDataNetworkDataSource(
+        dataSource: RetrofitJourneyDataNetworkDataSource
+    ): JourneyDataNetworkDataSource = dataSource
 
     @Provides
-    fun provideRttProxyStatusNetworkDataSource(dataSource: RetrofitRttProxyStatusNetworkDataSource): RttProxyStatusNetworkDataSource =
-        dataSource
+    fun provideRttProxyStatusNetworkDataSource(
+        dataSource: RetrofitRttProxyStatusNetworkDataSource
+    ): RttProxyStatusNetworkDataSource = dataSource
 }

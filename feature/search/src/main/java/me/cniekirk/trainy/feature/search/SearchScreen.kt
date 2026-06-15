@@ -48,13 +48,13 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import dev.zacsweers.metro.createGraph
-import org.orbitmvi.orbit.compose.collectAsState
-import org.orbitmvi.orbit.compose.collectSideEffect
 import java.text.ParseException
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 import java.util.TimeZone
+import org.orbitmvi.orbit.compose.collectAsState
+import org.orbitmvi.orbit.compose.collectSideEffect
 
 @Composable
 internal fun SearchScreen(
@@ -75,10 +75,12 @@ internal fun SearchScreen(
         onAction = { action ->
             when (action) {
                 is SearchAction.DateChanged -> viewModel.onDateChanged(action.value)
-                is SearchAction.FilterStationChanged -> viewModel.onFilterStationChanged(action.value)
+                is SearchAction.FilterStationChanged ->
+                    viewModel.onFilterStationChanged(action.value)
                 is SearchAction.ModeSelected -> viewModel.onModeSelected(action.mode)
                 SearchAction.SearchClicked -> viewModel.onSearchClick()
-                is SearchAction.TargetStationChanged -> viewModel.onTargetStationChanged(action.value)
+                is SearchAction.TargetStationChanged ->
+                    viewModel.onTargetStationChanged(action.value)
                 is SearchAction.TimeChanged -> viewModel.onTimeChanged(action.value)
             }
         },
@@ -94,24 +96,17 @@ internal fun SearchScreenContent(
     modifier: Modifier = Modifier,
 ) {
     Box(
-        modifier =
-            modifier
-                .fillMaxSize()
-                .safeDrawingPadding(),
+        modifier = modifier.fillMaxSize().safeDrawingPadding(),
         contentAlignment = Alignment.TopCenter,
     ) {
         BoxWithConstraints(
-            modifier =
-                Modifier
-                    .fillMaxSize()
-                    .verticalScroll(rememberScrollState()),
+            modifier = Modifier.fillMaxSize().verticalScroll(rememberScrollState())
         ) {
             val wideDateTimeFields = maxWidth >= 520.dp
 
             Column(
                 modifier =
-                    Modifier
-                        .fillMaxWidth()
+                    Modifier.fillMaxWidth()
                         .widthIn(max = 640.dp)
                         .padding(horizontal = 24.dp, vertical = 28.dp),
                 verticalArrangement = Arrangement.spacedBy(16.dp),
@@ -122,10 +117,7 @@ internal fun SearchScreenContent(
                 )
 
                 SingleChoiceSegmentedButtonRow(
-                    modifier =
-                        Modifier
-                            .fillMaxWidth()
-                            .testTag("search-mode"),
+                    modifier = Modifier.fillMaxWidth().testTag("search-mode")
                 ) {
                     SearchMode.entries.forEachIndexed { index, mode ->
                         SegmentedButton(
@@ -154,11 +146,7 @@ internal fun SearchScreenContent(
 
                 Button(
                     onClick = { onAction(SearchAction.SearchClicked) },
-                    modifier =
-                        Modifier
-                            .fillMaxWidth()
-                            .height(52.dp)
-                            .testTag("search-button"),
+                    modifier = Modifier.fillMaxWidth().height(52.dp).testTag("search-button"),
                 ) {
                     Text(stringResource(R.string.search_button))
                 }
@@ -177,10 +165,7 @@ private fun StationFields(
     OutlinedTextField(
         value = state.targetStation,
         onValueChange = { onAction(SearchAction.TargetStationChanged(it)) },
-        modifier =
-            Modifier
-                .fillMaxWidth()
-                .testTag("target-station"),
+        modifier = Modifier.fillMaxWidth().testTag("target-station"),
         label = { Text(stringResource(state.mode.targetLabelRes)) },
         singleLine = true,
         isError = targetStationErrorText != null,
@@ -195,10 +180,7 @@ private fun StationFields(
     OutlinedTextField(
         value = state.filterStation,
         onValueChange = { onAction(SearchAction.FilterStationChanged(it)) },
-        modifier =
-            Modifier
-                .fillMaxWidth()
-                .testTag("filter-station"),
+        modifier = Modifier.fillMaxWidth().testTag("filter-station"),
         label = { Text(stringResource(state.mode.filterLabelRes)) },
         singleLine = true,
         keyboardOptions =
@@ -285,8 +267,7 @@ private fun DateTimeFields(
             )
         }
 
-        null -> {
-        }
+        null -> {}
     }
 }
 
@@ -326,8 +307,7 @@ private fun SelectableDateTimeText(
             style = MaterialTheme.typography.titleMedium,
             color = textColor,
             modifier =
-                Modifier
-                    .fillMaxWidth()
+                Modifier.fillMaxWidth()
                     .heightIn(min = 48.dp)
                     .clickable(role = Role.Button, onClick = onClick)
                     .padding(vertical = 12.dp)
@@ -355,7 +335,7 @@ private fun SearchDatePickerDialog(
     key(selectedDateMillis) {
         val datePickerState =
             androidx.compose.material3.rememberDatePickerState(
-                initialSelectedDateMillis = selectedDateMillis,
+                initialSelectedDateMillis = selectedDateMillis
             )
 
         DatePickerDialog(
@@ -406,7 +386,7 @@ private fun SearchTimePickerDialog(
                 onClick = {
                     onTimeSelected(formatTime(timePickerState.hour, timePickerState.minute))
                     onDismiss()
-                },
+                }
             ) {
                 Text(stringResource(R.string.search_picker_confirm))
             }
@@ -465,11 +445,7 @@ internal fun DepartureBoardPlaceholderScreen(
     modifier: Modifier = Modifier,
 ) {
     Column(
-        modifier =
-            modifier
-                .fillMaxSize()
-                .safeDrawingPadding()
-                .padding(24.dp),
+        modifier = modifier.fillMaxSize().safeDrawingPadding().padding(24.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center,
     ) {
@@ -484,10 +460,7 @@ internal fun DepartureBoardPlaceholderScreen(
         )
         Button(
             onClick = onBackClick,
-            modifier =
-                Modifier
-                    .padding(top = 16.dp)
-                    .width(160.dp),
+            modifier = Modifier.padding(top = 16.dp).width(160.dp),
         ) {
             Text(stringResource(R.string.search_back_button))
         }
@@ -519,7 +492,8 @@ private val SearchMode.filterLabelRes: Int
 private fun SearchValidationError.message(): String =
     when (this) {
         SearchValidationError.BlankStation -> stringResource(R.string.search_error_enter_station)
-        SearchValidationError.InvalidDateTime -> stringResource(R.string.search_error_invalid_date_time)
+        SearchValidationError.InvalidDateTime ->
+            stringResource(R.string.search_error_invalid_date_time)
     }
 
 @Preview(showBackground = true)

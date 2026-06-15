@@ -3,9 +3,7 @@ package me.cniekirk.trainy.feature.search
 import dev.zacsweers.metro.Inject
 
 @Inject
-class BuildDepartureBoardSearch(
-    private val formatter: SearchDateTimeFormatter,
-) {
+class BuildDepartureBoardSearch(private val formatter: SearchDateTimeFormatter) {
     operator fun invoke(state: SearchUiState): BuildDepartureBoardSearchResult {
         val targetStation = state.targetStation.trim()
         val filterStation = state.filterStation.trim().ifEmpty { null }
@@ -13,11 +11,15 @@ class BuildDepartureBoardSearch(
 
         return when {
             targetStation.isEmpty() -> {
-                BuildDepartureBoardSearchResult.Error(targetStationError = SearchValidationError.BlankStation)
+                BuildDepartureBoardSearchResult.Error(
+                    targetStationError = SearchValidationError.BlankStation
+                )
             }
 
             dateTimeMillis == null -> {
-                BuildDepartureBoardSearchResult.Error(dateTimeError = SearchValidationError.InvalidDateTime)
+                BuildDepartureBoardSearchResult.Error(
+                    dateTimeError = SearchValidationError.InvalidDateTime
+                )
             }
 
             else -> {
@@ -27,7 +29,7 @@ class BuildDepartureBoardSearch(
                         targetStation = targetStation,
                         filterStation = filterStation,
                         dateTimeMillis = dateTimeMillis,
-                    ),
+                    )
                 )
             }
         }

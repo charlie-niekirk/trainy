@@ -8,9 +8,8 @@ import me.cniekirk.trainy.core.network.model.RttProxyBearerToken
 import me.cniekirk.trainy.core.network.retrofit.RttProxyApi
 
 @Inject
-class RetrofitJourneyDataNetworkDataSource(
-    private val api: RttProxyApi,
-) : JourneyDataNetworkDataSource {
+class RetrofitJourneyDataNetworkDataSource(private val api: RttProxyApi) :
+    JourneyDataNetworkDataSource {
     override suspend fun searchStops(
         bearerToken: RttProxyBearerToken,
         query: String?,

@@ -1,0 +1,28 @@
+config:
+  validation: true
+  warningsAsErrors: false
+
+naming:
+  FunctionNaming:
+    ignoreAnnotated:
+      - Composable
+  MatchingDeclarationName:
+    active: false
+
+complexity:
+  LongMethod:
+    threshold: 80
+  LongParameterList:
+    functionThreshold: 9
+    ignoreDefaultParameters: true
+  TooManyFunctions:
+    thresholdInFiles: 15
+    ignorePrivate: true
+
+style:
+  MagicNumber:
+    ignorePropertyDeclaration: true
+    ignoreCompanionObjectPropertyDeclaration: true
+    ignoreRanges: true
+  UnusedPrivateMember:
+    allowedNames: ".*Preview.*"
