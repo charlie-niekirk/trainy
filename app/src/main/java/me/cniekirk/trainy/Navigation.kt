@@ -10,6 +10,7 @@ import androidx.compose.ui.Modifier
 import androidx.navigation3.runtime.entryProvider
 import androidx.navigation3.ui.NavDisplay
 import me.cniekirk.trainy.feature.favourites.favouritesEntry
+import me.cniekirk.trainy.feature.search.departureBoardEntry
 import me.cniekirk.trainy.feature.search.searchEntry
 import me.cniekirk.trainy.feature.settings.settingsEntry
 import me.cniekirk.trainy.feature.stationsearch.StationSearchRoute
@@ -28,9 +29,10 @@ fun MainNavigation(modifier: Modifier = Modifier) {
     val navigator = remember(navigationState) { AppNavigator(navigationState) }
     val entryProvider =
         entryProvider {
-            searchEntry(onStationSearchClick = { navigator.navigate(StationSearchRoute) })
+            searchEntry(onSearchSubmitted = navigator::navigate)
             favouritesEntry()
             settingsEntry()
+            departureBoardEntry(onBackClick = navigator::goBack)
             stationSearchEntry(onBackClick = navigator::goBack)
         }
 

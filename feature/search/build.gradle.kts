@@ -2,6 +2,7 @@ plugins {
     id("trainy.android.library")
     id("trainy.android.compose")
     id("trainy.kotlin.serialization")
+    id("trainy.metro")
 }
 
 android {
@@ -9,5 +10,15 @@ android {
 }
 
 dependencies {
+    implementation(libs.androidx.lifecycle.viewmodel.compose)
     implementation(libs.androidx.navigation3.runtime)
+    implementation(libs.orbit.compose)
+    implementation(libs.orbit.viewmodel)
+
+    testImplementation(libs.junit)
+    testImplementation(libs.kotlinx.coroutines.test)
+    testImplementation(libs.mockk)
+
+    androidTestImplementation(libs.androidx.test.ext.junit)
+    androidTestImplementation(libs.androidx.test.runner)
 }
