@@ -36,51 +36,6 @@ jobs:
           tasks="$(.github/scripts/affected-ui-test-tasks.sh "$BASE_SHA" "$HEAD_SHA")"
           echo "tasks=$tasks" >> "$GITHUB_OUTPUT"
 
-  update-skip-label:
-    name: Update UI test label
-    needs: select-ui-tests
-    runs-on: ubuntu-24.04
-    permissions:
-      issues: write
-
-    steps:
-      - name: Update skip UI tests label
-        uses: actions/github-script@v9
-        env:
-          UI_TEST_TASKS: ${{ needs.select-ui-tests.outputs.tasks }}
-        with:
-          script: |
-            const label = 'skip ui tests';
-            const issue_number = context.issue.number;
-            const params = { ...context.repo, issue_number };
-
-            if (!process.env.UI_TEST_TASKS) {
-              try {
-                await github.rest.issues.getLabel({ ...context.repo, name: label });
-              } catch (error) {
-                if (error.status !== 404) throw error;
-                try {
-                  await github.rest.issues.createLabel({
-                    ...context.repo,
-                    name: label,
-                    color: '6f42c1',
-                    description: 'No affected feature modules contain UI tests',
-                  });
-                } catch (createError) {
-                  if (createError.status !== 422) throw createError;
-                }
-              }
-
-              await github.rest.issues.addLabels({ ...params, labels: [label] });
-              return;
-            }
-
-            try {
-              await github.rest.issues.removeLabel({ ...params, name: label });
-            } catch (error) {
-              if (error.status !== 404) throw error;
-            }
-
   affected-ui-tests:
     name: Affected UI tests
     needs: select-ui-tests

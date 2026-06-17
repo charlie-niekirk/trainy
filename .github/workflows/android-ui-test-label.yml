@@ -1,0 +1,101 @@
+name: Android UI Test Label
+
+on:
+  workflow_run:
+    workflows: [Android UI Tests]
+    types: [completed]
+
+permissions:
+  actions: read
+  contents: read
+  issues: write
+  pull-requests: read
+
+jobs:
+  update-skip-label:
+    name: Update UI test label
+    runs-on: ubuntu-24.04
+    if: github.event.workflow_run.event == 'pull_request'
+
+    steps:
+      - name: Update skip UI tests label
+        uses: actions/github-script@v9
+        with:
+          script: |
+            const label = 'skip ui tests';
+            const run = context.payload.workflow_run;
+            let pullRequest = run.pull_requests?.[0];
+
+            if (!pullRequest) {
+              const associatedPulls = await github.paginate(github.rest.repos.listPullRequestsAssociatedWithCommit, {
+                ...context.repo,
+                commit_sha: run.head_sha,
+                per_page: 100,
+              });
+
+              pullRequest = associatedPulls.find((pr) => pr.state === 'open') ?? associatedPulls[0];
+            }
+
+            if (!pullRequest) {
+              core.info('Workflow run is not associated with a pull request; skipping label update.');
+              return;
+            }
+
+            const currentPullRequest = await github.rest.pulls.get({
+              ...context.repo,
+              pull_number: pullRequest.number,
+            });
+
+            if (currentPullRequest.data.head.sha !== run.head_sha) {
+              core.info('A newer pull request commit exists; skipping stale label update.');
+              return;
+            }
+
+            const jobs = await github.paginate(github.rest.actions.listJobsForWorkflowRun, {
+              ...context.repo,
+              run_id: run.id,
+              per_page: 100,
+            });
+            const selectionJob = jobs.find((job) => job.name === 'Select affected UI tests');
+            const uiTestJob = jobs.find((job) => job.name === 'Affected UI tests');
+
+            if (!selectionJob || !uiTestJob) {
+              throw new Error('Expected UI test workflow jobs were not found.');
+            }
+
+            if (selectionJob.conclusion !== 'success') {
+              core.info('UI test selection did not succeed; leaving the label unchanged.');
+              return;
+            }
+
+            const issueParams = {
+              ...context.repo,
+              issue_number: pullRequest.number,
+            };
+
+            if (uiTestJob.conclusion === 'skipped') {
+              try {
+                await github.rest.issues.getLabel({ ...context.repo, name: label });
+              } catch (error) {
+                if (error.status !== 404) throw error;
+                try {
+                  await github.rest.issues.createLabel({
+                    ...context.repo,
+                    name: label,
+                    color: '6f42c1',
+                    description: 'No affected feature modules contain UI tests',
+                  });
+                } catch (createError) {
+                  if (createError.status !== 422) throw createError;
+                }
+              }
+
+              await github.rest.issues.addLabels({ ...issueParams, labels: [label] });
+              return;
+            }
+
+            try {
+              await github.rest.issues.removeLabel({ ...issueParams, name: label });
+            } catch (error) {
+              if (error.status !== 404) throw error;
+            }
