@@ -1,0 +1,75 @@
+name: Android UI Tests
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, ready_for_review]
+
+concurrency:
+  group: android-ui-tests-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  select-ui-tests:
+    name: Select affected UI tests
+    runs-on: ubuntu-24.04
+    outputs:
+      tasks: ${{ steps.affected.outputs.tasks }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+
+      - name: Test affected UI test task selection
+        run: .github/scripts/affected-ui-test-tasks-test.sh
+
+      - name: Determine affected UI test tasks
+        id: affected
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+        run: |
+          tasks="$(.github/scripts/affected-ui-test-tasks.sh "$BASE_SHA" "$HEAD_SHA")"
+          echo "tasks=$tasks" >> "$GITHUB_OUTPUT"
+
+  affected-ui-tests:
+    name: Affected UI tests
+    needs: select-ui-tests
+    if: needs.select-ui-tests.outputs.tasks != ''
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    permissions:
+      contents: read
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Set up JDK
+        uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: 21
+
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@v6
+
+      - name: Enable KVM
+        run: |
+          echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' \
+            | sudo tee /etc/udev/rules.d/99-kvm4all.rules
+          sudo udevadm control --reload-rules
+          sudo udevadm trigger --name-match=kvm
+
+      - name: Run affected UI tests
+        uses: reactivecircus/android-emulator-runner@v2
+        env:
+          UI_TEST_TASKS: ${{ needs.select-ui-tests.outputs.tasks }}
+        with:
+          api-level: 35
+          arch: x86_64
+          script: ./gradlew $UI_TEST_TASKS
