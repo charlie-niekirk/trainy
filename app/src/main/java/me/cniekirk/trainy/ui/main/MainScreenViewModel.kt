@@ -2,6 +2,10 @@ package me.cniekirk.trainy.ui.main
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import dev.zacsweers.metro.AppScope
+import dev.zacsweers.metro.ContributesIntoMap
+import dev.zacsweers.metro.Inject
+import dev.zacsweers.metrox.viewmodel.ViewModelKey
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.catch
@@ -10,6 +14,9 @@ import kotlinx.coroutines.flow.stateIn
 import me.cniekirk.trainy.data.DataRepository
 import me.cniekirk.trainy.ui.main.MainScreenUiState.Success
 
+@Inject
+@ViewModelKey
+@ContributesIntoMap(AppScope::class)
 class MainScreenViewModel(dataRepository: DataRepository) : ViewModel() {
     val uiState: StateFlow<MainScreenUiState> =
         dataRepository.data

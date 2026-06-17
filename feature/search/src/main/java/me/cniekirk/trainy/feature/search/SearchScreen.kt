@@ -46,8 +46,7 @@ import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
-import dev.zacsweers.metro.createGraph
+import dev.zacsweers.metrox.viewmodel.metroViewModel
 import java.text.ParseException
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -60,7 +59,7 @@ import org.orbitmvi.orbit.compose.collectSideEffect
 internal fun SearchScreen(
     onSearchSubmitted: (DepartureBoardRoute) -> Unit,
     modifier: Modifier = Modifier,
-    viewModel: SearchViewModel = viewModel { createGraph<SearchGraph>().searchViewModel },
+    viewModel: SearchViewModel = metroViewModel(),
 ) {
     val state by viewModel.collectAsState()
 
