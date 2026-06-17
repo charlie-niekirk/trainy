@@ -12,6 +12,7 @@ android {
 dependencies {
     implementation(libs.androidx.lifecycle.viewmodel.compose)
     implementation(libs.androidx.navigation3.runtime)
+    implementation(libs.metrox.viewmodel.compose)
     implementation(libs.orbit.compose)
     implementation(libs.orbit.viewmodel)
 

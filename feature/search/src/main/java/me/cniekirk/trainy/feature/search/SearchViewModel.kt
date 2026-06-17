@@ -1,12 +1,18 @@
 package me.cniekirk.trainy.feature.search
 
 import androidx.lifecycle.ViewModel
+import dev.zacsweers.metro.AppScope
+import dev.zacsweers.metro.ContributesIntoMap
 import dev.zacsweers.metro.Inject
+import dev.zacsweers.metro.binding
+import dev.zacsweers.metrox.viewmodel.ViewModelKey
 import org.orbitmvi.orbit.Container
 import org.orbitmvi.orbit.ContainerHost
 import org.orbitmvi.orbit.viewmodel.container
 
 @Inject
+@ViewModelKey
+@ContributesIntoMap(AppScope::class, binding<ViewModel>())
 class SearchViewModel(
     createDefaultSearchDateTime: CreateDefaultSearchDateTime,
     private val buildDepartureBoardSearch: BuildDepartureBoardSearch,
