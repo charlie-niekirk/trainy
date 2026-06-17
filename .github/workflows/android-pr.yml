@@ -33,6 +33,9 @@ jobs:
       - name: Set up Gradle
         uses: gradle/actions/setup-gradle@v6
 
+      - name: Test affected unit test task selection
+        run: .github/scripts/affected-unit-test-tasks-test.sh
+
       - name: Determine affected unit test tasks
         id: affected
         env:
