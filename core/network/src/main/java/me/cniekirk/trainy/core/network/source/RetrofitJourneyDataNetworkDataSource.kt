@@ -3,6 +3,7 @@ package me.cniekirk.trainy.core.network.source
 import dev.zacsweers.metro.Inject
 import me.cniekirk.trainy.core.network.generated.model.BoardResponse
 import me.cniekirk.trainy.core.network.generated.model.ServiceResponse
+import me.cniekirk.trainy.core.network.generated.model.StationsResponse
 import me.cniekirk.trainy.core.network.generated.model.StopsResponse
 import me.cniekirk.trainy.core.network.model.RttProxyBearerToken
 import me.cniekirk.trainy.core.network.retrofit.RttProxyApi
@@ -10,6 +11,9 @@ import me.cniekirk.trainy.core.network.retrofit.RttProxyApi
 @Inject
 class RetrofitJourneyDataNetworkDataSource(private val api: RttProxyApi) :
     JourneyDataNetworkDataSource {
+    override suspend fun getStations(bearerToken: RttProxyBearerToken): StationsResponse =
+        api.getStations(bearerToken.authorizationHeader())
+
     override suspend fun searchStops(
         bearerToken: RttProxyBearerToken,
         query: String?,

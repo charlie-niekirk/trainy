@@ -24,7 +24,9 @@ data class SearchDateTime(
 data class SearchUiState(
     val mode: SearchMode = SearchMode.Departing,
     val targetStation: String = "",
+    val targetStationName: String = "",
     val filterStation: String = "",
+    val filterStationName: String = "",
     val date: String = "",
     val time: String = "",
     val targetStationError: SearchValidationError? = null,
@@ -39,9 +41,8 @@ enum class SearchValidationError {
 internal sealed interface SearchAction {
     data class ModeSelected(val mode: SearchMode) : SearchAction
 
-    data class TargetStationChanged(val value: String) : SearchAction
-
-    data class FilterStationChanged(val value: String) : SearchAction
+    data class SelectStation(val field: me.cniekirk.trainy.feature.stationsearch.StationField) :
+        SearchAction
 
     data class DateChanged(val value: String) : SearchAction
 

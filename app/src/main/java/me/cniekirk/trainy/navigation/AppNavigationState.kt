@@ -13,6 +13,7 @@ import androidx.navigation3.runtime.NavKey
 import androidx.navigation3.runtime.rememberDecoratedNavEntries
 import androidx.navigation3.runtime.rememberNavBackStack
 import androidx.navigation3.runtime.rememberSaveableStateHolderNavEntryDecorator
+import androidx.navigation3.runtime.result.rememberResultEventBusNavEntryDecorator
 import androidx.navigation3.runtime.serialization.NavKeySerializer
 import androidx.savedstate.compose.serialization.serializers.MutableStateSerializer
 
@@ -58,7 +59,11 @@ class AppNavigationState(
     @Composable
     fun toDecoratedEntries(entryProvider: (NavKey) -> NavEntry<NavKey>): List<NavEntry<NavKey>> {
         val decoratedEntries = backStacks.mapValues { (_, stack) ->
-            val decorators = listOf(rememberSaveableStateHolderNavEntryDecorator<NavKey>())
+            val decorators =
+                listOf(
+                    rememberSaveableStateHolderNavEntryDecorator<NavKey>(),
+                    rememberResultEventBusNavEntryDecorator<NavKey>(),
+                )
             rememberDecoratedNavEntries(
                 backStack = stack,
                 entryDecorators = decorators,

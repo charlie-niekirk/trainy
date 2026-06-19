@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="station_search_title">Choose a station</string>
+    <string name="station_search_back">Back</string>
+    <string name="station_search_hint">Search by station name or CRS code</string>
+    <string name="station_search_retry">Couldn’t load stations. Retry</string>
+    <string name="station_search_empty">No stations found</string>
+</resources>

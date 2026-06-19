@@ -8,6 +8,9 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.runTest
+import me.cniekirk.trainy.core.data.Station
+import me.cniekirk.trainy.feature.stationsearch.StationField
+import me.cniekirk.trainy.feature.stationsearch.StationSelectionResult
 import org.junit.Rule
 import org.junit.Test
 
@@ -87,6 +90,27 @@ class SearchViewModelTest {
                 viewModel.container.stateFlow.value.targetStationError,
             )
             verify { buildDepartureBoardSearch(any<SearchUiState>()) }
+        }
+
+    @Test
+    fun stationResult_updatesSelectedFieldWithCrsAndName() =
+        runTest(mainDispatcherRule.testDispatcher) {
+            val viewModel = createViewModel()
+
+            viewModel
+                .onStationSelected(
+                    StationSelectionResult(
+                        StationField.Target,
+                        Station("London Kings Cross", "KGX"),
+                    )
+                )
+                .join()
+
+            assertEquals("KGX", viewModel.container.stateFlow.value.targetStation)
+            assertEquals(
+                "London Kings Cross",
+                viewModel.container.stateFlow.value.targetStationName,
+            )
         }
 
     private fun createViewModel(
