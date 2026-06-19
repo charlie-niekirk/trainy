@@ -3,11 +3,11 @@ package me.cniekirk.trainy.feature.search
 import androidx.activity.ComponentActivity
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.ui.test.assertIsDisplayed
-import androidx.compose.ui.test.junit4.createAndroidComposeRule
+import androidx.compose.ui.test.junit4.v2.createAndroidComposeRule
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
-import androidx.compose.ui.test.performTextInput
+import me.cniekirk.trainy.feature.stationsearch.StationField
 import org.junit.Rule
 import org.junit.Test
 
@@ -99,13 +99,13 @@ class SearchScreenTest {
         }
 
         composeTestRule.onNodeWithText("Arriving").performClick()
-        composeTestRule.onNodeWithTag("target-station").performTextInput("London Bridge")
-        composeTestRule.onNodeWithTag("filter-station").performTextInput("Brighton")
+        composeTestRule.onNodeWithTag("target-station").performClick()
+        composeTestRule.onNodeWithTag("filter-station").performClick()
         composeTestRule.onNodeWithTag("search-button").performClick()
 
         assert(actions.contains(SearchAction.ModeSelected(SearchMode.Arriving)))
-        assert(actions.contains(SearchAction.TargetStationChanged("London Bridge")))
-        assert(actions.contains(SearchAction.FilterStationChanged("Brighton")))
+        assert(actions.contains(SearchAction.SelectStation(StationField.Target)))
+        assert(actions.contains(SearchAction.SelectStation(StationField.Filter)))
         assert(actions.contains(SearchAction.SearchClicked))
     }
 }

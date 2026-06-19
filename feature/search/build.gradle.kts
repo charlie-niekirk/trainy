@@ -10,6 +10,7 @@ android {
 }
 
 dependencies {
+    implementation(project(":feature:station-search"))
     implementation(libs.androidx.lifecycle.viewmodel.compose)
     implementation(libs.androidx.navigation3.runtime)
     implementation(libs.metrox.viewmodel.compose)

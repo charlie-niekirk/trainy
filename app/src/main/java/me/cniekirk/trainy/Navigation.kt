@@ -27,7 +27,10 @@ fun MainNavigation(modifier: Modifier = Modifier) {
         )
     val navigator = remember(navigationState) { AppNavigator(navigationState) }
     val entryProvider = entryProvider {
-        searchEntry(onSearchSubmitted = navigator::navigate)
+        searchEntry(
+            onSearchSubmitted = navigator::navigate,
+            onStationSearch = navigator::navigate,
+        )
         favouritesEntry()
         settingsEntry()
         departureBoardEntry(onBackClick = navigator::goBack)

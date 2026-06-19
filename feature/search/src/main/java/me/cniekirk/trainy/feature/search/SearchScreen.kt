@@ -16,7 +16,6 @@ import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
@@ -24,7 +23,7 @@ import androidx.compose.material3.DatePicker
 import androidx.compose.material3.DatePickerDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.SegmentedButton
 import androidx.compose.material3.SegmentedButtonDefaults
 import androidx.compose.material3.SingleChoiceSegmentedButtonRow
@@ -42,26 +41,31 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
-import androidx.compose.ui.text.input.KeyboardCapitalization
-import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.navigation3.runtime.result.ResultEffect
 import dev.zacsweers.metrox.viewmodel.metroViewModel
 import java.text.ParseException
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 import java.util.TimeZone
+import me.cniekirk.trainy.feature.stationsearch.StationField
+import me.cniekirk.trainy.feature.stationsearch.StationSearchRoute
+import me.cniekirk.trainy.feature.stationsearch.StationSelectionResult
 import org.orbitmvi.orbit.compose.collectAsState
 import org.orbitmvi.orbit.compose.collectSideEffect
 
 @Composable
 internal fun SearchScreen(
     onSearchSubmitted: (DepartureBoardRoute) -> Unit,
+    onStationSearch: (StationSearchRoute) -> Unit,
     modifier: Modifier = Modifier,
     viewModel: SearchViewModel = metroViewModel(),
 ) {
     val state by viewModel.collectAsState()
+
+    ResultEffect<StationSelectionResult> { viewModel.onStationSelected(it) }
 
     viewModel.collectSideEffect { sideEffect ->
         when (sideEffect) {
@@ -74,12 +78,9 @@ internal fun SearchScreen(
         onAction = { action ->
             when (action) {
                 is SearchAction.DateChanged -> viewModel.onDateChanged(action.value)
-                is SearchAction.FilterStationChanged ->
-                    viewModel.onFilterStationChanged(action.value)
                 is SearchAction.ModeSelected -> viewModel.onModeSelected(action.mode)
+                is SearchAction.SelectStation -> onStationSearch(StationSearchRoute(action.field))
                 SearchAction.SearchClicked -> viewModel.onSearchClick()
-                is SearchAction.TargetStationChanged ->
-                    viewModel.onTargetStationChanged(action.value)
                 is SearchAction.TimeChanged -> viewModel.onTimeChanged(action.value)
             }
         },
@@ -161,33 +162,52 @@ private fun StationFields(
 ) {
     val targetStationErrorText = state.targetStationError?.message()
 
-    OutlinedTextField(
-        value = state.targetStation,
-        onValueChange = { onAction(SearchAction.TargetStationChanged(it)) },
-        modifier = Modifier.fillMaxWidth().testTag("target-station"),
-        label = { Text(stringResource(state.mode.targetLabelRes)) },
-        singleLine = true,
-        isError = targetStationErrorText != null,
-        supportingText = targetStationErrorText?.let { { Text(it) } },
-        keyboardOptions =
-            KeyboardOptions(
-                capitalization = KeyboardCapitalization.Words,
-                keyboardType = KeyboardType.Text,
-            ),
+    StationButton(
+        label = stringResource(state.mode.targetLabelRes),
+        stationName = state.targetStationName,
+        crsCode = state.targetStation,
+        error = targetStationErrorText,
+        testTag = "target-station",
+        onClick = { onAction(SearchAction.SelectStation(StationField.Target)) },
     )
 
-    OutlinedTextField(
-        value = state.filterStation,
-        onValueChange = { onAction(SearchAction.FilterStationChanged(it)) },
-        modifier = Modifier.fillMaxWidth().testTag("filter-station"),
-        label = { Text(stringResource(state.mode.filterLabelRes)) },
-        singleLine = true,
-        keyboardOptions =
-            KeyboardOptions(
-                capitalization = KeyboardCapitalization.Words,
-                keyboardType = KeyboardType.Text,
-            ),
+    StationButton(
+        label = stringResource(state.mode.filterLabelRes),
+        stationName = state.filterStationName,
+        crsCode = state.filterStation,
+        testTag = "filter-station",
+        onClick = { onAction(SearchAction.SelectStation(StationField.Filter)) },
     )
+}
+
+@Composable
+private fun StationButton(
+    label: String,
+    stationName: String,
+    crsCode: String,
+    testTag: String,
+    onClick: () -> Unit,
+    error: String? = null,
+) {
+    Column {
+        Text(label, style = MaterialTheme.typography.labelMedium)
+        OutlinedButton(
+            onClick = onClick,
+            modifier = Modifier.fillMaxWidth().heightIn(min = 56.dp).testTag(testTag),
+        ) {
+            Text(
+                if (stationName.isBlank()) stringResource(R.string.search_station_placeholder)
+                else "$stationName ($crsCode)"
+            )
+        }
+        error?.let {
+            Text(
+                it,
+                color = MaterialTheme.colorScheme.error,
+                style = MaterialTheme.typography.bodySmall,
+            )
+        }
+    }
 }
 
 @Composable

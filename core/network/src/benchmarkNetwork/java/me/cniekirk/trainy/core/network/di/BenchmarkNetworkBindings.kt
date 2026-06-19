@@ -2,6 +2,7 @@ package me.cniekirk.trainy.core.network.di
 
 import dev.zacsweers.metro.AppScope
 import dev.zacsweers.metro.BindingContainer
+import dev.zacsweers.metro.ContributesTo
 import dev.zacsweers.metro.Provides
 import dev.zacsweers.metro.SingleIn
 import okhttp3.Interceptor
@@ -11,6 +12,7 @@ import okhttp3.Protocol
 import okhttp3.Response
 import okhttp3.ResponseBody.Companion.toResponseBody
 
+@ContributesTo(AppScope::class)
 @BindingContainer
 object BenchmarkNetworkBindings {
     @Provides
@@ -29,6 +31,7 @@ private object MockRttProxyInterceptor : Interceptor {
             when {
                 request.method == "POST" && path == "/v1/client-tokens" -> CLIENT_TOKEN_JSON
                 request.method == "GET" && path == "/v1/stops" -> STOPS_JSON
+                request.method == "GET" && path == "/v1/stations" -> STATIONS_JSON
                 request.method == "GET" && path.startsWith("/v1/boards/") -> CACHED_DATA_JSON
                 request.method == "GET" && path.startsWith("/v1/services/") -> CACHED_DATA_JSON
                 request.method == "GET" && path == "/v1/meta" -> META_JSON
@@ -75,6 +78,22 @@ private const val STOPS_JSON =
       }
     }
 """
+
+private const val STATIONS_JSON =
+    """
+    {
+      "data": [
+        {
+          "crsCode": "BNC",
+          "name": "Benchmark Central"
+        }
+      ],
+      "meta": {
+        "cacheStatus": "HIT",
+        "count": 1
+      }
+    }
+    """
 
 private const val CACHED_DATA_JSON =
     """

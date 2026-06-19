@@ -2,6 +2,7 @@ package me.cniekirk.trainy.core.network.di
 
 import dev.zacsweers.metro.AppScope
 import dev.zacsweers.metro.BindingContainer
+import dev.zacsweers.metro.ContributesTo
 import dev.zacsweers.metro.Provides
 import dev.zacsweers.metro.Qualifier
 import dev.zacsweers.metro.SingleIn
@@ -22,8 +23,10 @@ private const val RTT_PROXY_BASE_URL = "https://api.cniekirk.online/"
 
 @Qualifier @Retention(AnnotationRetention.RUNTIME) annotation class RttProxyBaseUrl
 
+@ContributesTo(AppScope::class)
 @BindingContainer
 object NetworkBindings {
+
     @Provides @RttProxyBaseUrl fun provideRttProxyBaseUrl(): String = RTT_PROXY_BASE_URL
 
     @Provides @SingleIn(AppScope::class) fun provideNetworkJson(): Json = NetworkSerialization.json

@@ -6,6 +6,7 @@ import dev.zacsweers.metro.ContributesIntoMap
 import dev.zacsweers.metro.Inject
 import dev.zacsweers.metro.binding
 import dev.zacsweers.metrox.viewmodel.ViewModelKey
+import me.cniekirk.trainy.feature.stationsearch.StationSelectionResult
 import org.orbitmvi.orbit.Container
 import org.orbitmvi.orbit.ContainerHost
 import org.orbitmvi.orbit.viewmodel.container
@@ -48,6 +49,24 @@ class SearchViewModel(
 
     fun onFilterStationChanged(value: String) = intent {
         reduce { state.copy(filterStation = value) }
+    }
+
+    fun onStationSelected(result: StationSelectionResult) = intent {
+        reduce {
+            when (result.field) {
+                me.cniekirk.trainy.feature.stationsearch.StationField.Target ->
+                    state.copy(
+                        targetStation = result.station.crsCode,
+                        targetStationName = result.station.name,
+                        targetStationError = null,
+                    )
+                me.cniekirk.trainy.feature.stationsearch.StationField.Filter ->
+                    state.copy(
+                        filterStation = result.station.crsCode,
+                        filterStationName = result.station.name,
+                    )
+            }
+        }
     }
 
     fun onDateChanged(value: String) = intent {
