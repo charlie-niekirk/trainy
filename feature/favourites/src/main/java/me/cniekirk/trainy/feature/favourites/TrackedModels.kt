@@ -1,8 +1,15 @@
 package me.cniekirk.trainy.feature.favourites
 
-import me.cniekirk.trainy.core.data.TrackedTrainService
-
 data class TrackedUiState(
-    val services: List<TrackedTrainService> = emptyList(),
+    val services: List<TrackedServiceUiModel> = emptyList(),
     val isLoading: Boolean = true,
+)
+
+data class TrackedServiceUiModel(
+    val serviceId: String,
+    val time: String,
+    val destination: String,
+    val platform: String?,
+    val isPlatformConfirmed: Boolean,
+    val operatorName: String,
 )

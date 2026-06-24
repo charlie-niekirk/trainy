@@ -8,6 +8,7 @@ import dev.zacsweers.metro.Inject
 import dev.zacsweers.metro.binding
 import dev.zacsweers.metrox.viewmodel.ViewModelKey
 import kotlinx.coroutines.launch
+import me.cniekirk.trainy.core.data.TrackedTrainService
 import me.cniekirk.trainy.core.data.TrainRepository
 import org.orbitmvi.orbit.Container
 import org.orbitmvi.orbit.ContainerHost
@@ -27,7 +28,7 @@ class TrackedViewModel(private val repository: TrainRepository) :
                 blockingIntent {
                     reduce {
                         state.copy(
-                            services = services,
+                            services = services.map(TrackedTrainService::toUiModel),
                             isLoading = false,
                         )
                     }
@@ -36,3 +37,13 @@ class TrackedViewModel(private val repository: TrainRepository) :
         }
     }
 }
+
+private fun TrackedTrainService.toUiModel(): TrackedServiceUiModel =
+    TrackedServiceUiModel(
+        serviceId = serviceId,
+        time = time,
+        destination = destination,
+        platform = platform,
+        isPlatformConfirmed = isPlatformConfirmed,
+        operatorName = operatorName,
+    )

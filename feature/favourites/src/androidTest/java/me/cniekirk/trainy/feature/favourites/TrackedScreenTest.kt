@@ -12,7 +12,6 @@ import androidx.compose.ui.test.onAllNodesWithText
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
-import me.cniekirk.trainy.core.data.TrackedTrainService
 import org.junit.Assert.assertEquals
 import org.junit.Rule
 import org.junit.Test
@@ -86,7 +85,7 @@ class TrackedScreenTest {
     @Test
     fun trackedServiceClick_callsCallback() {
         val service = trackedService(serviceId = "gb-nr:L79342:2026-06-19")
-        var clickedService: TrackedTrainService? = null
+        var clickedService: TrackedServiceUiModel? = null
         rule.setContent {
             MaterialTheme {
                 TrackedContent(
@@ -106,13 +105,12 @@ class TrackedScreenTest {
         platform: String? = "8",
         isPlatformConfirmed: Boolean = false,
     ) =
-        TrackedTrainService(
+        TrackedServiceUiModel(
             serviceId = serviceId,
             time = "09:20",
             destination = "Exeter St Davids",
             platform = platform,
             isPlatformConfirmed = isPlatformConfirmed,
             operatorName = "South Western Railway",
-            trackedAtEpochMillis = 1_800_000_000_000L,
         )
 }

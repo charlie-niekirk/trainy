@@ -34,7 +34,19 @@ class TrackedViewModelTest {
             advanceUntilIdle()
 
             assertEquals(
-                TrackedUiState(listOf(service), isLoading = false),
+                TrackedUiState(
+                    listOf(
+                        TrackedServiceUiModel(
+                            serviceId = "tracked",
+                            time = "09:20",
+                            destination = "Exeter St Davids",
+                            platform = "8",
+                            isPlatformConfirmed = false,
+                            operatorName = "South Western Railway",
+                        )
+                    ),
+                    isLoading = false,
+                ),
                 viewModel.container.stateFlow.value,
             )
         }
@@ -43,7 +55,15 @@ class TrackedViewModelTest {
     fun trackedService_mapsToServiceDetailsRoute() {
         assertEquals(
             ServiceDetailsRoute("tracked"),
-            trackedService("tracked").toServiceDetailsRoute(),
+            TrackedServiceUiModel(
+                    serviceId = "tracked",
+                    time = "09:20",
+                    destination = "Exeter St Davids",
+                    platform = "8",
+                    isPlatformConfirmed = false,
+                    operatorName = "South Western Railway",
+                )
+                .toServiceDetailsRoute(),
         )
     }
 
