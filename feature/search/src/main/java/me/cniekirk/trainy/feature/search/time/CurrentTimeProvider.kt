@@ -1,4 +1,4 @@
-package me.cniekirk.trainy.feature.search
+package me.cniekirk.trainy.feature.search.time
 
 import dev.zacsweers.metro.Inject
 

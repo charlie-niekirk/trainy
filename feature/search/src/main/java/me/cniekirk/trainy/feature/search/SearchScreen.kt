@@ -6,14 +6,12 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawingPadding
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -50,6 +48,8 @@ import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 import java.util.TimeZone
+import me.cniekirk.trainy.feature.servicelist.ServiceListMode
+import me.cniekirk.trainy.feature.servicelist.ServiceListRoute
 import me.cniekirk.trainy.feature.stationsearch.StationField
 import me.cniekirk.trainy.feature.stationsearch.StationSearchRoute
 import me.cniekirk.trainy.feature.stationsearch.StationSelectionResult
@@ -58,7 +58,7 @@ import org.orbitmvi.orbit.compose.collectSideEffect
 
 @Composable
 internal fun SearchScreen(
-    onSearchSubmitted: (DepartureBoardRoute) -> Unit,
+    onSearchSubmitted: (ServiceListRoute) -> Unit,
     onStationSearch: (StationSearchRoute) -> Unit,
     modifier: Modifier = Modifier,
     viewModel: SearchViewModel = metroViewModel(),
@@ -69,7 +69,7 @@ internal fun SearchScreen(
 
     viewModel.collectSideEffect { sideEffect ->
         when (sideEffect) {
-            is SearchSideEffect.NavigateToDepartureBoard -> onSearchSubmitted(sideEffect.route)
+            is SearchSideEffect.NavigateToServiceList -> onSearchSubmitted(sideEffect.route)
         }
     }
 
@@ -119,14 +119,14 @@ internal fun SearchScreenContent(
                 SingleChoiceSegmentedButtonRow(
                     modifier = Modifier.fillMaxWidth().testTag("search-mode")
                 ) {
-                    SearchMode.entries.forEachIndexed { index, mode ->
+                    ServiceListMode.entries.forEachIndexed { index, mode ->
                         SegmentedButton(
                             selected = state.mode == mode,
                             onClick = { onAction(SearchAction.ModeSelected(mode)) },
                             shape =
                                 SegmentedButtonDefaults.itemShape(
                                     index = index,
-                                    count = SearchMode.entries.size,
+                                    count = ServiceListMode.entries.size,
                                 ),
                             label = { Text(stringResource(mode.optionLabelRes)) },
                         )
@@ -457,54 +457,25 @@ private val datePickerFormatter: SimpleDateFormat
             timeZone = TimeZone.getTimeZone("UTC")
         }
 
-@Composable
-internal fun DepartureBoardPlaceholderScreen(
-    route: DepartureBoardRoute,
-    onBackClick: () -> Unit,
-    modifier: Modifier = Modifier,
-) {
-    Column(
-        modifier = modifier.fillMaxSize().safeDrawingPadding().padding(24.dp),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center,
-    ) {
-        Text(
-            text = stringResource(R.string.search_departure_board_title),
-            style = MaterialTheme.typography.headlineMedium,
-        )
-        Spacer(Modifier.height(8.dp))
-        Text(
-            text = route.search.targetStation,
-            style = MaterialTheme.typography.bodyLarge,
-        )
-        Button(
-            onClick = onBackClick,
-            modifier = Modifier.padding(top = 16.dp).width(160.dp),
-        ) {
-            Text(stringResource(R.string.search_back_button))
-        }
-    }
-}
-
-private val SearchMode.optionLabelRes: Int
+private val ServiceListMode.optionLabelRes: Int
     get() =
         when (this) {
-            SearchMode.Departing -> R.string.search_mode_departing
-            SearchMode.Arriving -> R.string.search_mode_arriving
+            ServiceListMode.Departing -> R.string.search_mode_departing
+            ServiceListMode.Arriving -> R.string.search_mode_arriving
         }
 
-private val SearchMode.targetLabelRes: Int
+private val ServiceListMode.targetLabelRes: Int
     get() =
         when (this) {
-            SearchMode.Departing -> R.string.search_target_departing_label
-            SearchMode.Arriving -> R.string.search_target_arriving_label
+            ServiceListMode.Departing -> R.string.search_target_departing_label
+            ServiceListMode.Arriving -> R.string.search_target_arriving_label
         }
 
-private val SearchMode.filterLabelRes: Int
+private val ServiceListMode.filterLabelRes: Int
     get() =
         when (this) {
-            SearchMode.Departing -> R.string.search_filter_departing_label
-            SearchMode.Arriving -> R.string.search_filter_arriving_label
+            ServiceListMode.Departing -> R.string.search_filter_departing_label
+            ServiceListMode.Arriving -> R.string.search_filter_arriving_label
         }
 
 @Composable

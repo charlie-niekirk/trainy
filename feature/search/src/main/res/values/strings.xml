@@ -15,8 +15,6 @@
     <string name="search_picker_cancel">Cancel</string>
     <string name="search_button">Search</string>
     <string name="search_station_placeholder">Choose station</string>
-    <string name="search_departure_board_title">Departure board</string>
-    <string name="search_back_button">Back</string>
     <string name="search_error_enter_station">Enter a station</string>
     <string name="search_error_invalid_date_time">Enter a valid date and time</string>
 </resources>

@@ -50,6 +50,8 @@ include(":feature:favourites")
 
 include(":feature:search")
 
+include(":feature:service-list")
+
 include(":feature:settings")
 
 include(":feature:station-search")

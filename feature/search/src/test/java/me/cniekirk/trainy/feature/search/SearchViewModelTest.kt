@@ -9,6 +9,12 @@ import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.runTest
 import me.cniekirk.trainy.core.data.Station
+import me.cniekirk.trainy.feature.search.usecase.BuildServiceListSearchResult
+import me.cniekirk.trainy.feature.search.usecase.BuildServiceListSearchUseCase
+import me.cniekirk.trainy.feature.search.usecase.CreateDefaultSearchDateTimeUseCase
+import me.cniekirk.trainy.feature.servicelist.ServiceListMode
+import me.cniekirk.trainy.feature.servicelist.ServiceListRoute
+import me.cniekirk.trainy.feature.servicelist.ServiceListSearch
 import me.cniekirk.trainy.feature.stationsearch.StationField
 import me.cniekirk.trainy.feature.stationsearch.StationSelectionResult
 import org.junit.Rule
@@ -27,7 +33,7 @@ class SearchViewModelTest {
 
             assertEquals(
                 SearchUiState(
-                    mode = SearchMode.Departing,
+                    mode = ServiceListMode.Departing,
                     date = "2026-06-01",
                     time = "11:30",
                 ),
@@ -40,48 +46,50 @@ class SearchViewModelTest {
         runTest(mainDispatcherRule.testDispatcher) {
             val viewModel = createViewModel()
 
-            viewModel.onModeSelected(SearchMode.Arriving).join()
+            viewModel.onModeSelected(ServiceListMode.Arriving).join()
 
-            assertEquals(SearchMode.Arriving, viewModel.container.stateFlow.value.mode)
+            assertEquals(ServiceListMode.Arriving, viewModel.container.stateFlow.value.mode)
         }
 
     @Test
-    fun searchClick_withValidState_postsDepartureBoardRoute() =
+    fun searchClick_withValidState_postsServiceListRoute() =
         runTest(mainDispatcherRule.testDispatcher) {
             val search =
-                DepartureBoardSearch(
-                    mode = SearchMode.Arriving,
+                ServiceListSearch(
+                    mode = ServiceListMode.Arriving,
                     targetStation = "London Bridge",
                     filterStation = "Brighton",
                     dateTimeMillis = 1_780_313_400_000L,
                 )
-            val buildDepartureBoardSearch = mockk<BuildDepartureBoardSearch>()
-            every { buildDepartureBoardSearch(any<SearchUiState>()) } returns
-                BuildDepartureBoardSearchResult.Success(search)
-            val viewModel = createViewModel(buildDepartureBoardSearch = buildDepartureBoardSearch)
+            val buildServiceListSearchUseCase = mockk<BuildServiceListSearchUseCase>()
+            every { buildServiceListSearchUseCase(any<SearchUiState>()) } returns
+                BuildServiceListSearchResult.Success(search)
+            val viewModel =
+                createViewModel(buildServiceListSearchUseCase = buildServiceListSearchUseCase)
             val sideEffect = async { viewModel.container.sideEffectFlow.first() }
 
-            viewModel.onModeSelected(SearchMode.Arriving).join()
+            viewModel.onModeSelected(ServiceListMode.Arriving).join()
             viewModel.onTargetStationChanged(" London Bridge ").join()
             viewModel.onFilterStationChanged(" Brighton ").join()
             viewModel.onSearchClick().join()
 
             assertEquals(
-                SearchSideEffect.NavigateToDepartureBoard(DepartureBoardRoute(search)),
+                SearchSideEffect.NavigateToServiceList(ServiceListRoute(search)),
                 sideEffect.await(),
             )
-            verify { buildDepartureBoardSearch(any<SearchUiState>()) }
+            verify { buildServiceListSearchUseCase(any<SearchUiState>()) }
         }
 
     @Test
     fun searchClick_withBlankTarget_updatesValidationError() =
         runTest(mainDispatcherRule.testDispatcher) {
-            val buildDepartureBoardSearch = mockk<BuildDepartureBoardSearch>()
-            every { buildDepartureBoardSearch(any<SearchUiState>()) } returns
-                BuildDepartureBoardSearchResult.Error(
+            val buildServiceListSearchUseCase = mockk<BuildServiceListSearchUseCase>()
+            every { buildServiceListSearchUseCase(any<SearchUiState>()) } returns
+                BuildServiceListSearchResult.Error(
                     targetStationError = SearchValidationError.BlankStation
                 )
-            val viewModel = createViewModel(buildDepartureBoardSearch = buildDepartureBoardSearch)
+            val viewModel =
+                createViewModel(buildServiceListSearchUseCase = buildServiceListSearchUseCase)
 
             viewModel.onSearchClick().join()
 
@@ -89,7 +97,7 @@ class SearchViewModelTest {
                 SearchValidationError.BlankStation,
                 viewModel.container.stateFlow.value.targetStationError,
             )
-            verify { buildDepartureBoardSearch(any<SearchUiState>()) }
+            verify { buildServiceListSearchUseCase(any<SearchUiState>()) }
         }
 
     @Test
@@ -114,32 +122,32 @@ class SearchViewModelTest {
         }
 
     private fun createViewModel(
-        createDefaultSearchDateTime: CreateDefaultSearchDateTime =
+        createDefaultSearchDateTimeUseCase: CreateDefaultSearchDateTimeUseCase =
             mockCreateDefaultSearchDateTime(),
-        buildDepartureBoardSearch: BuildDepartureBoardSearch = mockBuildDepartureBoardSearch(),
+        buildServiceListSearchUseCase: BuildServiceListSearchUseCase = mockBuildServiceListSearch(),
     ): SearchViewModel =
         SearchViewModel(
-            createDefaultSearchDateTime = createDefaultSearchDateTime,
-            buildDepartureBoardSearch = buildDepartureBoardSearch,
+            createDefaultSearchDateTimeUseCase = createDefaultSearchDateTimeUseCase,
+            buildServiceListSearchUseCase = buildServiceListSearchUseCase,
         )
 
-    private fun mockCreateDefaultSearchDateTime(): CreateDefaultSearchDateTime {
-        val createDefaultSearchDateTime = mockk<CreateDefaultSearchDateTime>()
-        every { createDefaultSearchDateTime() } returns defaultDateTime
-        return createDefaultSearchDateTime
+    private fun mockCreateDefaultSearchDateTime(): CreateDefaultSearchDateTimeUseCase {
+        val createDefaultSearchDateTimeUseCase = mockk<CreateDefaultSearchDateTimeUseCase>()
+        every { createDefaultSearchDateTimeUseCase() } returns defaultDateTime
+        return createDefaultSearchDateTimeUseCase
     }
 
-    private fun mockBuildDepartureBoardSearch(): BuildDepartureBoardSearch {
-        val buildDepartureBoardSearch = mockk<BuildDepartureBoardSearch>()
-        every { buildDepartureBoardSearch(any<SearchUiState>()) } returns
-            BuildDepartureBoardSearchResult.Success(
-                DepartureBoardSearch(
-                    mode = SearchMode.Departing,
+    private fun mockBuildServiceListSearch(): BuildServiceListSearchUseCase {
+        val buildServiceListSearchUseCase = mockk<BuildServiceListSearchUseCase>()
+        every { buildServiceListSearchUseCase(any<SearchUiState>()) } returns
+            BuildServiceListSearchResult.Success(
+                ServiceListSearch(
+                    mode = ServiceListMode.Departing,
                     targetStation = "London Bridge",
                     filterStation = null,
                     dateTimeMillis = 1_780_313_400_000L,
                 )
             )
-        return buildDepartureBoardSearch
+        return buildServiceListSearchUseCase
     }
 }

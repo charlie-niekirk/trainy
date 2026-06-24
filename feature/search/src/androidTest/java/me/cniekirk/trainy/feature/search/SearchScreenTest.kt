@@ -7,6 +7,7 @@ import androidx.compose.ui.test.junit4.v2.createAndroidComposeRule
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
+import me.cniekirk.trainy.feature.servicelist.ServiceListMode
 import me.cniekirk.trainy.feature.stationsearch.StationField
 import org.junit.Rule
 import org.junit.Test
@@ -42,7 +43,7 @@ class SearchScreenTest {
                 SearchScreenContent(
                     state =
                         SearchUiState(
-                            mode = SearchMode.Arriving,
+                            mode = ServiceListMode.Arriving,
                             date = "2026-06-13",
                             time = "14:30",
                         ),
@@ -103,7 +104,7 @@ class SearchScreenTest {
         composeTestRule.onNodeWithTag("filter-station").performClick()
         composeTestRule.onNodeWithTag("search-button").performClick()
 
-        assert(actions.contains(SearchAction.ModeSelected(SearchMode.Arriving)))
+        assert(actions.contains(SearchAction.ModeSelected(ServiceListMode.Arriving)))
         assert(actions.contains(SearchAction.SelectStation(StationField.Target)))
         assert(actions.contains(SearchAction.SelectStation(StationField.Filter)))
         assert(actions.contains(SearchAction.SearchClicked))
