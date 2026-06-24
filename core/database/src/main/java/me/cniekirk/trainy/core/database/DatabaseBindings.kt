@@ -19,4 +19,8 @@ object DatabaseBindings {
     @Provides
     fun provideCachedStationDao(database: TrainyDatabase): CachedStationDao =
         database.cachedStationDao()
+
+    @Provides
+    fun provideTrackedServiceDao(database: TrainyDatabase): TrackedServiceDao =
+        database.trackedServiceDao()
 }

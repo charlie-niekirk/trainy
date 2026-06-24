@@ -1,7 +1,17 @@
 package me.cniekirk.trainy.core.data
 
+import kotlinx.coroutines.flow.Flow
+
 interface TrainRepository {
     suspend fun getServices(query: ServiceListQuery): List<TrainService>
+
+    fun observeTrackedServices(): Flow<List<TrackedTrainService>>
+
+    fun observeTrackedServiceIds(): Flow<Set<String>>
+
+    suspend fun trackService(service: TrainService)
+
+    suspend fun untrackService(serviceId: String)
 }
 
 data class ServiceListQuery(
@@ -18,4 +28,14 @@ data class TrainService(
     val platform: String?,
     val isPlatformConfirmed: Boolean,
     val operatorName: String,
+)
+
+data class TrackedTrainService(
+    val serviceId: String,
+    val time: String,
+    val destination: String,
+    val platform: String?,
+    val isPlatformConfirmed: Boolean,
+    val operatorName: String,
+    val trackedAtEpochMillis: Long,
 )

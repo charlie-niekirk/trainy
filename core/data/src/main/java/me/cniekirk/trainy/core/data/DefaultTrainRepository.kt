@@ -7,11 +7,15 @@ import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 import java.util.TimeZone
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
 import kotlinx.serialization.json.JsonArray
 import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.contentOrNull
 import kotlinx.serialization.json.jsonPrimitive
+import me.cniekirk.trainy.core.database.TrackedServiceDao
+import me.cniekirk.trainy.core.database.TrackedServiceEntity
 import me.cniekirk.trainy.core.network.model.RttProxyBearerToken
 import me.cniekirk.trainy.core.network.source.ClientTokensNetworkDataSource
 import me.cniekirk.trainy.core.network.source.JourneyDataNetworkDataSource
@@ -21,6 +25,8 @@ import me.cniekirk.trainy.core.network.source.JourneyDataNetworkDataSource
 class DefaultTrainRepository(
     private val clientTokens: ClientTokensNetworkDataSource,
     private val journeyData: JourneyDataNetworkDataSource,
+    private val trackedServiceDao: TrackedServiceDao,
+    private val trackedServiceClock: TrackedServiceClock,
 ) : TrainRepository {
     override suspend fun getServices(query: ServiceListQuery): List<TrainService> {
         val token = RttProxyBearerToken(clientTokens.createClientToken().token)
@@ -37,7 +43,47 @@ class DefaultTrainRepository(
             it.toTrainService(query.isArrivals)
         }
     }
+
+    override fun observeTrackedServices(): Flow<List<TrackedTrainService>> =
+        trackedServiceDao.observeAll().map { services ->
+            services.map(TrackedServiceEntity::toModel)
+        }
+
+    override fun observeTrackedServiceIds(): Flow<Set<String>> =
+        trackedServiceDao.observeIds().map { it.toSet() }
+
+    override suspend fun trackService(service: TrainService) {
+        trackedServiceDao.upsert(
+            service.toTrackedServiceEntity(trackedServiceClock.nowEpochMillis())
+        )
+    }
+
+    override suspend fun untrackService(serviceId: String) {
+        trackedServiceDao.delete(serviceId)
+    }
 }
+
+private fun TrainService.toTrackedServiceEntity(trackedAtEpochMillis: Long): TrackedServiceEntity =
+    TrackedServiceEntity(
+        serviceId = id,
+        time = time,
+        destination = destination,
+        platform = platform,
+        isPlatformConfirmed = isPlatformConfirmed,
+        operatorName = operatorName,
+        trackedAtEpochMillis = trackedAtEpochMillis,
+    )
+
+private fun TrackedServiceEntity.toModel(): TrackedTrainService =
+    TrackedTrainService(
+        serviceId = serviceId,
+        time = time,
+        destination = destination,
+        platform = platform,
+        isPlatformConfirmed = isPlatformConfirmed,
+        operatorName = operatorName,
+        trackedAtEpochMillis = trackedAtEpochMillis,
+    )
 
 private fun JsonElement.toTrainService(isArrivals: Boolean): TrainService? {
     val service = this as? JsonObject
