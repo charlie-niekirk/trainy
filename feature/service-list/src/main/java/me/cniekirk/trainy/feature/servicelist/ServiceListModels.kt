@@ -21,6 +21,11 @@ data class ServiceListSearch(
 
 data class ServiceListUiState(
     val services: List<TrainService> = emptyList(),
+    val trackedServiceIds: Set<String> = emptySet(),
     val isLoading: Boolean = true,
     val hasError: Boolean = false,
 )
+
+sealed interface ServiceListSideEffect {
+    data object ShowTrackingError : ServiceListSideEffect
+}
