@@ -7,4 +7,7 @@
     <string name="service_list_platform_unavailable">Platform —</string>
     <string name="service_list_platform_confirmed">Confirmed platform</string>
     <string name="service_list_platform_estimated">Estimated platform</string>
+    <string name="service_list_track_service">Track service to %1$s</string>
+    <string name="service_list_untrack_service">Remove tracked service to %1$s</string>
+    <string name="service_list_tracking_error">Could not update tracked service</string>
 </resources>
