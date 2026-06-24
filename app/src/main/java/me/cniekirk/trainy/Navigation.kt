@@ -11,6 +11,7 @@ import androidx.navigation3.runtime.entryProvider
 import androidx.navigation3.ui.NavDisplay
 import me.cniekirk.trainy.feature.favourites.favouritesEntry
 import me.cniekirk.trainy.feature.search.searchEntry
+import me.cniekirk.trainy.feature.servicedetails.serviceDetailsEntry
 import me.cniekirk.trainy.feature.servicelist.serviceListEntry
 import me.cniekirk.trainy.feature.settings.settingsEntry
 import me.cniekirk.trainy.feature.stationsearch.stationSearchEntry
@@ -31,8 +32,9 @@ fun MainNavigation(modifier: Modifier = Modifier) {
             onSearchSubmitted = navigator::navigate,
             onStationSearch = navigator::navigate,
         )
-        favouritesEntry()
+        favouritesEntry(onServiceClick = navigator::navigate)
         settingsEntry()
+        serviceDetailsEntry(onBackClick = navigator::goBack)
         serviceListEntry(onBackClick = navigator::goBack)
         stationSearchEntry(onBackClick = navigator::goBack)
     }
