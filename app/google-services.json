@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "453505229081",
+    "project_id": "trainy-cniekirk-20260624",
+    "storage_bucket": "trainy-cniekirk-20260624.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:453505229081:android:f304dab0d6ff4d9233a588",
+        "android_client_info": {
+          "package_name": "me.cniekirk.trainy"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAYqaM6ofbk6SYo1u_m_4Yw7-Mha5yJ_cY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
