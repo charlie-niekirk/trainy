@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="service_list_back_button">Back</string>
+    <string name="service_list_retry">Try again</string>
+    <string name="service_list_empty">No services found</string>
+    <string name="service_list_platform">Platform %1$s</string>
+    <string name="service_list_platform_unavailable">Platform —</string>
+    <string name="service_list_platform_confirmed">Confirmed platform</string>
+    <string name="service_list_platform_estimated">Estimated platform</string>
+</resources>

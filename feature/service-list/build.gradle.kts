@@ -6,12 +6,12 @@ plugins {
 }
 
 android {
-    namespace = "me.cniekirk.trainy.feature.search"
+    namespace = "me.cniekirk.trainy.feature.servicelist"
 }
 
 dependencies {
-    implementation(project(":feature:service-list"))
-    implementation(project(":feature:station-search"))
+    implementation(project(":core:data"))
+    implementation(libs.androidx.compose.material.icons.core)
     implementation(libs.androidx.lifecycle.viewmodel.compose)
     implementation(libs.androidx.navigation3.runtime)
     implementation(libs.metrox.viewmodel.compose)

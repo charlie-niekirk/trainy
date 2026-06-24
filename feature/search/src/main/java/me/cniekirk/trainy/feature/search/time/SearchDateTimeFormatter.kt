@@ -1,4 +1,4 @@
-package me.cniekirk.trainy.feature.search
+package me.cniekirk.trainy.feature.search.time
 
 import dev.zacsweers.metro.Inject
 import java.text.ParseException
@@ -6,13 +6,13 @@ import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 import java.util.TimeZone
+import me.cniekirk.trainy.feature.search.SearchDateTime
 
-class SearchDateTimeFormatter
-internal constructor(
+@Inject
+class SearchDateTimeFormatter(
     private val locale: Locale = Locale.UK,
     private val timeZone: TimeZone = TimeZone.getDefault(),
 ) {
-    @Inject constructor() : this(Locale.UK, TimeZone.getDefault())
 
     fun format(timestampMillis: Long): SearchDateTime =
         SearchDateTime(

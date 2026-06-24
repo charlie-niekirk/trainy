@@ -1,20 +1,7 @@
 package me.cniekirk.trainy.feature.search
 
-import kotlinx.serialization.Serializable
-
-@Serializable
-enum class SearchMode {
-    Departing,
-    Arriving,
-}
-
-@Serializable
-data class DepartureBoardSearch(
-    val mode: SearchMode,
-    val targetStation: String,
-    val filterStation: String?,
-    val dateTimeMillis: Long,
-)
+import me.cniekirk.trainy.feature.servicelist.ServiceListMode
+import me.cniekirk.trainy.feature.servicelist.ServiceListRoute
 
 data class SearchDateTime(
     val date: String,
@@ -22,7 +9,7 @@ data class SearchDateTime(
 )
 
 data class SearchUiState(
-    val mode: SearchMode = SearchMode.Departing,
+    val mode: ServiceListMode = ServiceListMode.Departing,
     val targetStation: String = "",
     val targetStationName: String = "",
     val filterStation: String = "",
@@ -39,7 +26,7 @@ enum class SearchValidationError {
 }
 
 internal sealed interface SearchAction {
-    data class ModeSelected(val mode: SearchMode) : SearchAction
+    data class ModeSelected(val mode: ServiceListMode) : SearchAction
 
     data class SelectStation(val field: me.cniekirk.trainy.feature.stationsearch.StationField) :
         SearchAction
@@ -52,5 +39,5 @@ internal sealed interface SearchAction {
 }
 
 sealed interface SearchSideEffect {
-    data class NavigateToDepartureBoard(val route: DepartureBoardRoute) : SearchSideEffect
+    data class NavigateToServiceList(val route: ServiceListRoute) : SearchSideEffect
 }

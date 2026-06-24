@@ -5,6 +5,12 @@ import io.mockk.mockk
 import java.util.TimeZone
 import junit.framework.TestCase.assertEquals
 import junit.framework.TestCase.assertNull
+import me.cniekirk.trainy.feature.search.time.CurrentTimeProvider
+import me.cniekirk.trainy.feature.search.time.SearchDateTimeFormatter
+import me.cniekirk.trainy.feature.search.usecase.BuildServiceListSearchResult
+import me.cniekirk.trainy.feature.search.usecase.BuildServiceListSearchUseCase
+import me.cniekirk.trainy.feature.search.usecase.CreateDefaultSearchDateTimeUseCase
+import me.cniekirk.trainy.feature.servicelist.ServiceListMode
 import org.junit.Test
 
 class SearchUseCasesTest {
@@ -17,7 +23,7 @@ class SearchUseCasesTest {
                 every { currentTimeMillis() } returns 1_780_313_400_000L
             }
         val useCase =
-            CreateDefaultSearchDateTime(
+            CreateDefaultSearchDateTimeUseCase(
                 formatter = formatter,
                 currentTimeProvider = currentTimeProvider,
             )
@@ -26,11 +32,11 @@ class SearchUseCasesTest {
     }
 
     @Test
-    fun buildDepartureBoardSearch_trimsStationsAndBuildsRequest() {
+    fun buildServiceListSearch_trimsStationsAndBuildsRequest() {
         val result =
-            BuildDepartureBoardSearch(formatter)(
+            BuildServiceListSearchUseCase(formatter)(
                 SearchUiState(
-                    mode = SearchMode.Arriving,
+                    mode = ServiceListMode.Arriving,
                     targetStation = "  London Bridge  ",
                     filterStation = "  Brighton ",
                     date = "2026-06-01",
@@ -38,17 +44,17 @@ class SearchUseCasesTest {
                 )
             )
 
-        val search = (result as BuildDepartureBoardSearchResult.Success).search
-        assertEquals(SearchMode.Arriving, search.mode)
+        val search = (result as BuildServiceListSearchResult.Success).search
+        assertEquals(ServiceListMode.Arriving, search.mode)
         assertEquals("London Bridge", search.targetStation)
         assertEquals("Brighton", search.filterStation)
         assertEquals(1_780_313_400_000L, search.dateTimeMillis)
     }
 
     @Test
-    fun buildDepartureBoardSearch_allowsBlankFilterStation() {
+    fun buildServiceListSearch_allowsBlankFilterStation() {
         val result =
-            BuildDepartureBoardSearch(formatter)(
+            BuildServiceListSearchUseCase(formatter)(
                 SearchUiState(
                     targetStation = "London Bridge",
                     filterStation = " ",
@@ -57,14 +63,14 @@ class SearchUseCasesTest {
                 )
             )
 
-        val search = (result as BuildDepartureBoardSearchResult.Success).search
+        val search = (result as BuildServiceListSearchResult.Success).search
         assertNull(search.filterStation)
     }
 
     @Test
-    fun buildDepartureBoardSearch_rejectsBlankTargetStation() {
+    fun buildServiceListSearch_rejectsBlankTargetStation() {
         val result =
-            BuildDepartureBoardSearch(formatter)(
+            BuildServiceListSearchUseCase(formatter)(
                 SearchUiState(
                     targetStation = " ",
                     date = "2026-06-01",
@@ -74,14 +80,14 @@ class SearchUseCasesTest {
 
         assertEquals(
             SearchValidationError.BlankStation,
-            (result as BuildDepartureBoardSearchResult.Error).targetStationError,
+            (result as BuildServiceListSearchResult.Error).targetStationError,
         )
     }
 
     @Test
-    fun buildDepartureBoardSearch_rejectsInvalidDateTime() {
+    fun buildServiceListSearch_rejectsInvalidDateTime() {
         val result =
-            BuildDepartureBoardSearch(formatter)(
+            BuildServiceListSearchUseCase(formatter)(
                 SearchUiState(
                     targetStation = "London Bridge",
                     date = "2026-99-01",
@@ -91,7 +97,7 @@ class SearchUseCasesTest {
 
         assertEquals(
             SearchValidationError.InvalidDateTime,
-            (result as BuildDepartureBoardSearchResult.Error).dateTimeError,
+            (result as BuildServiceListSearchResult.Error).dateTimeError,
         )
     }
 }

@@ -6,6 +6,11 @@ import dev.zacsweers.metro.ContributesIntoMap
 import dev.zacsweers.metro.Inject
 import dev.zacsweers.metro.binding
 import dev.zacsweers.metrox.viewmodel.ViewModelKey
+import me.cniekirk.trainy.feature.search.usecase.BuildServiceListSearchResult
+import me.cniekirk.trainy.feature.search.usecase.BuildServiceListSearchUseCase
+import me.cniekirk.trainy.feature.search.usecase.CreateDefaultSearchDateTimeUseCase
+import me.cniekirk.trainy.feature.servicelist.ServiceListMode
+import me.cniekirk.trainy.feature.servicelist.ServiceListRoute
 import me.cniekirk.trainy.feature.stationsearch.StationSelectionResult
 import org.orbitmvi.orbit.Container
 import org.orbitmvi.orbit.ContainerHost
@@ -15,10 +20,10 @@ import org.orbitmvi.orbit.viewmodel.container
 @ViewModelKey
 @ContributesIntoMap(AppScope::class, binding<ViewModel>())
 class SearchViewModel(
-    createDefaultSearchDateTime: CreateDefaultSearchDateTime,
-    private val buildDepartureBoardSearch: BuildDepartureBoardSearch,
+    createDefaultSearchDateTimeUseCase: CreateDefaultSearchDateTimeUseCase,
+    private val buildServiceListSearchUseCase: BuildServiceListSearchUseCase,
 ) : ViewModel(), ContainerHost<SearchUiState, SearchSideEffect> {
-    private val defaultDateTime = createDefaultSearchDateTime()
+    private val defaultDateTime = createDefaultSearchDateTimeUseCase()
 
     override val container: Container<SearchUiState, SearchSideEffect> =
         container(
@@ -29,7 +34,7 @@ class SearchViewModel(
                 )
         )
 
-    fun onModeSelected(mode: SearchMode) = intent {
+    fun onModeSelected(mode: ServiceListMode) = intent {
         reduce {
             state.copy(
                 mode = mode,
@@ -88,8 +93,8 @@ class SearchViewModel(
     }
 
     fun onSearchClick() = intent {
-        when (val result = buildDepartureBoardSearch(state)) {
-            is BuildDepartureBoardSearchResult.Error -> {
+        when (val result = buildServiceListSearchUseCase(state)) {
+            is BuildServiceListSearchResult.Error -> {
                 reduce {
                     state.copy(
                         targetStationError = result.targetStationError,
@@ -98,9 +103,9 @@ class SearchViewModel(
                 }
             }
 
-            is BuildDepartureBoardSearchResult.Success -> {
+            is BuildServiceListSearchResult.Success -> {
                 postSideEffect(
-                    SearchSideEffect.NavigateToDepartureBoard(DepartureBoardRoute(result.search))
+                    SearchSideEffect.NavigateToServiceList(ServiceListRoute(result.search))
                 )
             }
         }
