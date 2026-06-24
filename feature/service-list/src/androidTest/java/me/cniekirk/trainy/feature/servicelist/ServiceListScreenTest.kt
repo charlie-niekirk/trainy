@@ -7,8 +7,11 @@ import androidx.compose.ui.test.SemanticsMatcher
 import androidx.compose.ui.test.assert
 import androidx.compose.ui.test.assertCountEquals
 import androidx.compose.ui.test.assertIsDisplayed
+import androidx.compose.ui.test.assertIsOff
+import androidx.compose.ui.test.assertIsOn
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.onAllNodesWithText
+import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
@@ -48,6 +51,7 @@ class ServiceListScreenTest {
                     state = ServiceListUiState(services = services, isLoading = false),
                     onBackClick = {},
                     onRetry = {},
+                    onTrackClick = {},
                 )
             }
         }
@@ -86,6 +90,7 @@ class ServiceListScreenTest {
                     state = ServiceListUiState(isLoading = false, hasError = true),
                     onBackClick = {},
                     onRetry = { retried = true },
+                    onTrackClick = {},
                 )
             }
         }
@@ -93,6 +98,80 @@ class ServiceListScreenTest {
         rule.onAllNodesWithText("Arriving at London Waterloo (from Salisbury)").assertCountEquals(1)
         rule.onNodeWithText("Try again").performClick()
         assertTrue(retried)
+    }
+
+    @Test
+    fun trackingAction_showsStateAndCallsCallback() {
+        val service =
+            TrainService(
+                id = "trackable",
+                time = "09:20",
+                destination = "Exeter St Davids",
+                platform = "8",
+                isPlatformConfirmed = false,
+                operatorName = "South Western Railway",
+            )
+        var trackedService: TrainService? = null
+
+        rule.setContent {
+            MaterialTheme {
+                ServiceListContent(
+                    search = departingSearch(),
+                    state =
+                        ServiceListUiState(
+                            services = listOf(service),
+                            trackedServiceIds = emptySet(),
+                            isLoading = false,
+                        ),
+                    onBackClick = {},
+                    onRetry = {},
+                    onTrackClick = { trackedService = it },
+                )
+            }
+        }
+
+        rule
+            .onNodeWithContentDescription("Track service to Exeter St Davids")
+            .assertIsDisplayed()
+            .assertIsOff()
+            .performClick()
+
+        assertTrue(trackedService == service)
+    }
+
+    @Test
+    fun trackedServiceAction_showsRemoveState() {
+        val service =
+            TrainService(
+                id = "tracked",
+                time = "09:20",
+                destination = "Exeter St Davids",
+                platform = "8",
+                isPlatformConfirmed = false,
+                operatorName = "South Western Railway",
+            )
+
+        rule.setContent {
+            MaterialTheme {
+                ServiceListContent(
+                    search = departingSearch(),
+                    state =
+                        ServiceListUiState(
+                            services = listOf(service),
+                            trackedServiceIds = setOf("tracked"),
+                            isLoading = false,
+                        ),
+                    onBackClick = {},
+                    onRetry = {},
+                    onTrackClick = {},
+                )
+            }
+        }
+
+        rule
+            .onNodeWithContentDescription("Remove tracked service to Exeter St Davids")
+            .assertIsDisplayed()
+            .assertIsOn()
     }
 
     private fun departingSearch() =
