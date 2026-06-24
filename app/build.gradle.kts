@@ -4,6 +4,8 @@ plugins {
     id("trainy.kotlin.serialization")
     id("trainy.metro")
     alias(libs.plugins.androidx.baselineprofile)
+    alias(libs.plugins.firebase.crashlytics)
+    alias(libs.plugins.google.services)
 }
 
 android {
@@ -34,6 +36,20 @@ android {
     }
 }
 
+configurations
+    .matching {
+        it.name in
+            setOf(
+                "benchmarkReleaseCompileClasspath",
+                "benchmarkReleaseRuntimeClasspath",
+                "nonMinifiedReleaseCompileClasspath",
+                "nonMinifiedReleaseRuntimeClasspath",
+            )
+    }
+    .configureEach {
+        exclude(group = "com.google.firebase")
+    }
+
 baselineProfile {
     automaticGenerationDuringBuild = false
     saveInSrc = true
@@ -56,6 +72,12 @@ dependencies {
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.activity.compose)
+    debugImplementation(platform(libs.firebase.bom))
+    debugImplementation(libs.firebase.analytics)
+    debugImplementation(libs.firebase.crashlytics)
+    releaseImplementation(platform(libs.firebase.bom))
+    releaseImplementation(libs.firebase.analytics)
+    releaseImplementation(libs.firebase.crashlytics)
 
     // Arch Components
     implementation(libs.androidx.lifecycle.runtime.compose)
