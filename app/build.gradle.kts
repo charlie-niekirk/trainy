@@ -4,6 +4,8 @@ plugins {
     id("trainy.kotlin.serialization")
     id("trainy.metro")
     alias(libs.plugins.androidx.baselineprofile)
+    alias(libs.plugins.firebase.crashlytics)
+    alias(libs.plugins.google.services)
 }
 
 android {
@@ -56,6 +58,9 @@ dependencies {
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.activity.compose)
+    implementation(platform(libs.firebase.bom))
+    implementation(libs.firebase.analytics)
+    implementation(libs.firebase.crashlytics)
 
     // Arch Components
     implementation(libs.androidx.lifecycle.runtime.compose)
