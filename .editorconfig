@@ -1,0 +1,22 @@
+root = true
+
+[*]
+charset = utf-8
+end_of_line = lf
+insert_final_newline = true
+indent_style = space
+indent_size = 4
+tab_width = 4
+trim_trailing_whitespace = true
+
+[*.{kt,kts,java,xml}]
+ij_continuation_indent_size = 8
+ij_kotlin_continuation_indent_size = 8
+ij_kotlin_indent_size = 4
+ij_kotlin_tab_width = 4
+ij_xml_continuation_indent_size = 8
+ij_xml_indent_size = 4
+ij_xml_tab_width = 4
+
+[*.md]
+trim_trailing_whitespace = false
