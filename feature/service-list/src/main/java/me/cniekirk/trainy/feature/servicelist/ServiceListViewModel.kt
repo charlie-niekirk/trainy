@@ -13,6 +13,7 @@ import me.cniekirk.trainy.core.data.TrainRepository
 import me.cniekirk.trainy.core.data.TrainService
 import org.orbitmvi.orbit.Container
 import org.orbitmvi.orbit.ContainerHost
+import org.orbitmvi.orbit.blockingIntent
 import org.orbitmvi.orbit.viewmodel.container
 
 @Inject
@@ -28,7 +29,7 @@ class ServiceListViewModel(private val repository: TrainRepository) :
     init {
         viewModelScope.launch {
             repository.observeTrackedServiceIds().collect { trackedServiceIds ->
-                intent { reduce { state.copy(trackedServiceIds = trackedServiceIds) } }
+                blockingIntent { reduce { state.copy(trackedServiceIds = trackedServiceIds) } }
             }
         }
     }
