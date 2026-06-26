@@ -52,6 +52,8 @@ include(":feature:search")
 
 include(":feature:service-list")
 
+include(":feature:service-details")
+
 include(":feature:settings")
 
 include(":feature:station-search")

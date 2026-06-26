@@ -25,7 +25,7 @@ val TopLevelDestinations =
         ),
         TopLevelDestination(
             route = FavouritesRoute,
-            label = "Favourites",
+            label = "Tracked",
             icon = Icons.Filled.Favorite,
         ),
         TopLevelDestination(

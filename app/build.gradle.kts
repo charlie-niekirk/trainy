@@ -64,6 +64,7 @@ dependencies {
     implementation(project(":core:data"))
     implementation(project(":feature:favourites"))
     implementation(project(":feature:search"))
+    implementation(project(":feature:service-details"))
     implementation(project(":feature:service-list"))
     implementation(project(":feature:settings"))
     implementation(project(":feature:station-search"))

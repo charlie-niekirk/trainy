@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="tracked_title">Tracked</string>
+    <string name="tracked_empty">No tracked services yet</string>
+    <string name="tracked_platform">Platform %1$s</string>
+    <string name="tracked_platform_unavailable">Platform —</string>
+    <string name="tracked_platform_confirmed">Confirmed platform</string>
+    <string name="tracked_platform_estimated">Estimated platform</string>
+</resources>
