@@ -2,11 +2,14 @@ package me.cniekirk.trainy.feature.servicelist
 
 import io.mockk.coEvery
 import io.mockk.coVerify
+import io.mockk.every
 import io.mockk.mockk
 import junit.framework.TestCase.assertEquals
 import junit.framework.TestCase.assertFalse
 import junit.framework.TestCase.assertTrue
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
 import me.cniekirk.trainy.core.data.TrainRepository
 import me.cniekirk.trainy.core.data.TrainService
@@ -18,6 +21,7 @@ class ServiceListViewModelTest {
     @get:Rule val mainDispatcherRule = MainDispatcherRule()
 
     private val repository = mockk<TrainRepository>()
+    private val trackedServiceIds = MutableStateFlow<Set<String>>(emptySet())
     private val search =
         ServiceListSearch(
             mode = ServiceListMode.Departing,
@@ -33,7 +37,7 @@ class ServiceListViewModelTest {
         runTest(mainDispatcherRule.testDispatcher) {
             val service = TrainService("id", "09:20", "Exeter St Davids", "8", false, "SWR")
             coEvery { repository.getServices(any()) } returns listOf(service)
-            val viewModel = ServiceListViewModel(repository)
+            val viewModel = viewModel()
 
             viewModel.load(search).join()
 
@@ -56,7 +60,7 @@ class ServiceListViewModelTest {
     fun loadFailure_showsRetryState() =
         runTest(mainDispatcherRule.testDispatcher) {
             coEvery { repository.getServices(any()) } throws IllegalStateException("network")
-            val viewModel = ServiceListViewModel(repository)
+            val viewModel = viewModel()
 
             viewModel.load(search).join()
 
@@ -68,11 +72,55 @@ class ServiceListViewModelTest {
     fun retry_requestsSameSearchAgain() =
         runTest(mainDispatcherRule.testDispatcher) {
             coEvery { repository.getServices(any()) } returns emptyList()
-            val viewModel = ServiceListViewModel(repository)
+            val viewModel = viewModel()
 
             viewModel.load(search).join()
             viewModel.retry(search).join()
 
             coVerify(exactly = 2) { repository.getServices(any()) }
         }
+
+    @Test
+    fun trackedServiceIds_areObserved() =
+        runTest(mainDispatcherRule.testDispatcher) {
+            val viewModel = viewModel()
+
+            trackedServiceIds.value = setOf("tracked")
+            advanceUntilIdle()
+
+            assertEquals(setOf("tracked"), viewModel.container.stateFlow.value.trackedServiceIds)
+        }
+
+    @Test
+    fun trackingClick_tracksUntrackedService() =
+        runTest(mainDispatcherRule.testDispatcher) {
+            val service = TrainService("id", "09:20", "Exeter St Davids", "8", false, "SWR")
+            coEvery { repository.trackService(service) } returns Unit
+            val viewModel = viewModel()
+
+            viewModel.onTrackingClick(service).join()
+
+            coVerify { repository.trackService(service) }
+            coVerify(exactly = 0) { repository.untrackService(any()) }
+        }
+
+    @Test
+    fun trackingClick_untracksTrackedService() =
+        runTest(mainDispatcherRule.testDispatcher) {
+            val service = TrainService("id", "09:20", "Exeter St Davids", "8", false, "SWR")
+            trackedServiceIds.value = setOf("id")
+            coEvery { repository.untrackService("id") } returns Unit
+            val viewModel = viewModel()
+            advanceUntilIdle()
+
+            viewModel.onTrackingClick(service).join()
+
+            coVerify { repository.untrackService("id") }
+            coVerify(exactly = 0) { repository.trackService(any()) }
+        }
+
+    private fun viewModel(): ServiceListViewModel {
+        every { repository.observeTrackedServiceIds() } returns trackedServiceIds
+        return ServiceListViewModel(repository)
+    }
 }
