@@ -17,6 +17,8 @@ import me.cniekirk.trainy.core.network.generated.model.BoardResponse
 import me.cniekirk.trainy.core.network.generated.model.CacheStatus
 import me.cniekirk.trainy.core.network.generated.model.ClientTokenResponse
 import me.cniekirk.trainy.core.network.generated.model.ResponseMeta
+import me.cniekirk.trainy.core.network.generated.model.ServiceResponse
+import me.cniekirk.trainy.core.network.model.RttProxyBearerToken
 import me.cniekirk.trainy.core.network.source.ClientTokensNetworkDataSource
 import me.cniekirk.trainy.core.network.source.JourneyDataNetworkDataSource
 import org.junit.Test
@@ -82,6 +84,38 @@ class DefaultTrainRepositoryTest {
                 stpFilter = null,
             )
         }
+    }
+
+    @Test
+    fun getServiceDetails_usesClientTokenAndProxyUniqueIdentityEndpoint() = runTest {
+        coEvery { tokens.createClientToken() } returns tokenResponse()
+        coEvery { network.getServiceByUniqueIdentity(any(), any()) } returns serviceResponse()
+
+        val details = repository().getServiceDetails("gb-nr:L79342:2026-06-19")
+
+        assertEquals("London Waterloo", details.origin)
+        assertEquals("Exeter St Davids", details.destination)
+        assertEquals("South Western Railway", details.operatorName)
+        assertEquals("09:20", details.time)
+        coVerify(exactly = 1) { tokens.createClientToken() }
+        coVerify(exactly = 1) {
+            network.getServiceByUniqueIdentity(
+                RttProxyBearerToken("token"),
+                "L79342:2026-06-19",
+            )
+        }
+    }
+
+    @Test(expected = IllegalArgumentException::class)
+    fun getServiceDetails_rejectsMalformedResponse() = runTest {
+        coEvery { tokens.createClientToken() } returns tokenResponse()
+        coEvery { network.getServiceByUniqueIdentity(any(), any()) } returns
+            ServiceResponse(
+                data = NetworkSerialization.json.parseToJsonElement("{}").jsonObject,
+                meta = ResponseMeta(CacheStatus.MISS),
+            )
+
+        repository().getServiceDetails("gb-nr:L79342:2026-06-19")
     }
 
     @Test
@@ -181,6 +215,12 @@ class DefaultTrainRepositoryTest {
             meta = ResponseMeta(CacheStatus.MISS),
         )
 
+    private fun serviceResponse(): ServiceResponse =
+        ServiceResponse(
+            data = NetworkSerialization.json.parseToJsonElement(SERVICE_DETAILS_JSON).jsonObject,
+            meta = ResponseMeta(CacheStatus.MISS),
+        )
+
     private fun service(
         id: String,
         destination: String = "Exeter St Davids",
@@ -249,5 +289,34 @@ private const val BOARD_JSON =
           "destination": [{ "location": { "description": "Yeovil Junction" } }]
         }
       ]
+    }
+    """
+
+private const val SERVICE_DETAILS_JSON =
+    """
+    {
+      "service": {
+        "scheduleMetadata": {
+          "operator": { "name": "South Western Railway" }
+        },
+        "origin": [{ "location": { "description": "London Waterloo" } }],
+        "destination": [{ "location": { "description": "Exeter St Davids" } }],
+        "locations": [
+          {
+            "temporalData": {
+              "displayAs": "CALL",
+              "departure": { "scheduleAdvertised": "2026-06-19T09:20:00Z" }
+            },
+            "location": { "description": "London Waterloo" }
+          },
+          {
+            "temporalData": {
+              "displayAs": "CALL",
+              "arrival": { "scheduleAdvertised": "2026-06-19T12:15:00Z" }
+            },
+            "location": { "description": "Exeter St Davids" }
+          }
+        ]
+      }
     }
     """

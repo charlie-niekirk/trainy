@@ -44,6 +44,20 @@ class DefaultTrainRepository(
         }
     }
 
+    override suspend fun getServiceDetails(serviceId: String): TrainServiceDetails {
+        val token = RttProxyBearerToken(clientTokens.createClientToken().token)
+        return requireNotNull(
+            journeyData
+                .getServiceByUniqueIdentity(
+                    token,
+                    serviceId.removePrefix(NETWORK_RAIL_NAMESPACE_PREFIX),
+                )
+                .toTrainServiceDetails()
+        ) {
+            "Service details response did not contain a usable service"
+        }
+    }
+
     override fun observeTrackedServices(): Flow<List<TrackedTrainService>> =
         trackedServiceDao.observeAll().map { services ->
             services.map(TrackedServiceEntity::toModel)
@@ -140,3 +154,4 @@ private fun Long.toApiDateTime(): String =
 
 private const val ISO_TIME_SEPARATOR = 'T'
 private const val DISPLAY_TIME_LENGTH = 5
+private const val NETWORK_RAIL_NAMESPACE_PREFIX = "gb-nr:"
