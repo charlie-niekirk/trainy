@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="service_details_title">Service details</string>
+    <string name="service_details_back_button">Back</string>
+    <string name="service_details_error">Unable to load service details</string>
+    <string name="service_details_retry">Try again</string>
+    <string name="service_details_route">%1$s → %2$s</string>
+    <string name="service_details_scheduled_time">Scheduled %1$s</string>
+    <string name="service_details_platform">Platform %1$s</string>
+    <string name="service_details_stop_description">%1$s, stop %2$d of %3$d</string>
+</resources>
