@@ -12,6 +12,7 @@ import me.cniekirk.trainy.core.data.ServiceListQuery
 import me.cniekirk.trainy.core.data.TrackedTrainService
 import me.cniekirk.trainy.core.data.TrainRepository
 import me.cniekirk.trainy.core.data.TrainService
+import me.cniekirk.trainy.core.data.TrainServiceDetails
 import me.cniekirk.trainy.feature.servicedetails.ServiceDetailsRoute
 import org.junit.Rule
 import org.junit.Test
@@ -82,6 +83,9 @@ class TrackedViewModelTest {
 private class FakeTrainRepository(private val trackedServices: Flow<List<TrackedTrainService>>) :
     TrainRepository {
     override suspend fun getServices(query: ServiceListQuery): List<TrainService> = emptyList()
+
+    override suspend fun getServiceDetails(serviceId: String): TrainServiceDetails =
+        error("Not used")
 
     override fun observeTrackedServices(): Flow<List<TrackedTrainService>> = trackedServices
 

@@ -5,6 +5,8 @@ import kotlinx.coroutines.flow.Flow
 interface TrainRepository {
     suspend fun getServices(query: ServiceListQuery): List<TrainService>
 
+    suspend fun getServiceDetails(serviceId: String): TrainServiceDetails
+
     fun observeTrackedServices(): Flow<List<TrackedTrainService>>
 
     fun observeTrackedServiceIds(): Flow<Set<String>>
