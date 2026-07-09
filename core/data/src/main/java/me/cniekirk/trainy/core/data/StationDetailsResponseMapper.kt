@@ -41,9 +41,11 @@ internal fun NationalRailStation.toStationDetails(): StationDetails =
         alerts =
             stationAlerts.orEmpty().map {
                 StationAlert(
-                    title = it.title?.takeIf(String::isNotBlank) ?: it.name,
+                    title =
+                        it.title?.takeIf(String::isNotBlank)
+                            ?: it.name?.takeIf(String::isNotBlank),
                     text = it.alertText.stripHtml(),
-                    validFrom = it.validFrom,
+                    validFrom = it.validFrom?.takeIf(String::isNotBlank),
                     validTo = it.validTo?.takeIf(String::isNotBlank),
                 )
             },

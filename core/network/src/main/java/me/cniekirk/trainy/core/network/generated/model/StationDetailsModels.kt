@@ -54,9 +54,9 @@ data class NationalRailLocation(val latitude: Double? = null, val longitude: Dou
 
 @Serializable
 data class NationalRailStationAlerts(
-    val name: String,
+    val name: String? = null,
     val title: String? = null,
-    val validFrom: String,
+    val validFrom: String? = null,
     val validTo: String? = null,
     val alertText: String,
 )

@@ -33,9 +33,9 @@ data class StationCoordinates(
 )
 
 data class StationAlert(
-    val title: String,
+    val title: String? = null,
     val text: String,
-    val validFrom: String,
+    val validFrom: String? = null,
     val validTo: String? = null,
 )
 

@@ -213,23 +213,28 @@ private fun AlertsSection(alerts: List<StationAlert>) {
     ) {
         alerts.forEach { alert ->
             Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
-                Text(alert.title, style = MaterialTheme.typography.titleSmall)
+                alert.title?.takeIf(String::isNotBlank)?.let { title ->
+                    Text(title, style = MaterialTheme.typography.titleSmall)
+                }
                 Text(alert.text, style = MaterialTheme.typography.bodyMedium)
-                val validTo = alert.validTo
-                Text(
-                    text =
-                        if (validTo != null) {
-                            stringResource(
-                                R.string.station_details_alert_valid_range,
-                                alert.validFrom,
-                                validTo,
-                            )
-                        } else {
-                            stringResource(R.string.station_details_alert_valid, alert.validFrom)
-                        },
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                )
+                val validFrom = alert.validFrom
+                if (validFrom != null) {
+                    val validTo = alert.validTo
+                    Text(
+                        text =
+                            if (validTo != null) {
+                                stringResource(
+                                    R.string.station_details_alert_valid_range,
+                                    validFrom,
+                                    validTo,
+                                )
+                            } else {
+                                stringResource(R.string.station_details_alert_valid, validFrom)
+                            },
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    )
+                }
             }
             Spacer(Modifier.height(8.dp))
         }

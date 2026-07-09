@@ -53,6 +53,38 @@ class StationDetailsResponseMapperTest {
     }
 
     @Test
+    fun mapsAlertsWithOnlyAlertText() {
+        val details =
+            StationResponse(
+                    data =
+                        NationalRailStation(
+                            name = "London Waterloo",
+                            crsCode = "WAT",
+                            stationAlerts =
+                                listOf(
+                                    NationalRailStationAlerts(
+                                        alertText = "Temporary platform closure."
+                                    )
+                                ),
+                        ),
+                    meta = ResponseMeta(CacheStatus.MISS),
+                )
+                .toStationDetails()
+
+        assertEquals(
+            listOf(
+                StationAlert(
+                    title = null,
+                    text = "Temporary platform closure.",
+                    validFrom = null,
+                    validTo = null,
+                )
+            ),
+            details.alerts,
+        )
+    }
+
+    @Test
     fun mapsAlertsAndStripsHtmlFromNotes() {
         val details = stationResponse().toStationDetails()
 
