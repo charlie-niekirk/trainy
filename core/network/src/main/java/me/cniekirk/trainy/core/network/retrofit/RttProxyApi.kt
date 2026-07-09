@@ -5,6 +5,7 @@ import me.cniekirk.trainy.core.network.generated.model.ClientTokenResponse
 import me.cniekirk.trainy.core.network.generated.model.HealthResponse
 import me.cniekirk.trainy.core.network.generated.model.MetaResponse
 import me.cniekirk.trainy.core.network.generated.model.ServiceResponse
+import me.cniekirk.trainy.core.network.generated.model.StationResponse
 import me.cniekirk.trainy.core.network.generated.model.StationsResponse
 import me.cniekirk.trainy.core.network.generated.model.StopsResponse
 import retrofit2.http.GET
@@ -25,6 +26,12 @@ interface RttProxyApi {
 
     @GET("v1/stations")
     suspend fun getStations(@Header("Authorization") authorization: String): StationsResponse
+
+    @GET("v1/stations/{crsCode}")
+    suspend fun getStation(
+        @Header("Authorization") authorization: String,
+        @Path("crsCode") crsCode: String,
+    ): StationResponse
 
     @GET("v1/boards/{code}")
     suspend fun getBoard(
