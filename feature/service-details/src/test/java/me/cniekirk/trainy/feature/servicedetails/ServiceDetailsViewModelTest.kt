@@ -6,13 +6,20 @@ import io.mockk.mockk
 import junit.framework.TestCase.assertEquals
 import junit.framework.TestCase.assertFalse
 import junit.framework.TestCase.assertTrue
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.async
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
 import me.cniekirk.trainy.core.data.TrainRepository
 import me.cniekirk.trainy.core.data.TrainServiceDetails
 import me.cniekirk.trainy.core.data.TrainServiceStop
+import me.cniekirk.trainy.feature.stationdetails.StationDetailsRoute
 import org.junit.Rule
 import org.junit.Test
 
+@OptIn(ExperimentalCoroutinesApi::class)
 class ServiceDetailsViewModelTest {
     @get:Rule val mainDispatcherRule = MainDispatcherRule()
 
@@ -81,6 +88,40 @@ class ServiceDetailsViewModelTest {
             coVerify(exactly = 1) { repository.getServiceDetails("gb-nr:L80061:2026-06-19") }
         }
 
+    @Test
+    fun onStopSelected_withCrs_postsNavigateToStation() =
+        runTest(mainDispatcherRule.testDispatcher) {
+            val viewModel = ServiceDetailsViewModel(repository)
+            val effect = async { viewModel.container.sideEffectFlow.first() }
+            val stop = TrainServiceStop("Salisbury", "10:42", "4", "SAL")
+
+            viewModel.onStopSelected(stop).join()
+
+            assertEquals(
+                ServiceDetailsSideEffect.NavigateToStation(
+                    StationDetailsRoute(crsCode = "SAL", name = "Salisbury")
+                ),
+                effect.await(),
+            )
+        }
+
+    @Test
+    fun onStopSelected_withoutCrs_doesNothing() =
+        runTest(mainDispatcherRule.testDispatcher) {
+            val viewModel = ServiceDetailsViewModel(repository)
+            val collected = mutableListOf<ServiceDetailsSideEffect>()
+            val collectJob = launch {
+                viewModel.container.sideEffectFlow.collect { collected.add(it) }
+            }
+            val stop = TrainServiceStop("Unknown", "10:00", null, null)
+
+            viewModel.onStopSelected(stop).join()
+            advanceUntilIdle()
+            collectJob.cancel()
+
+            assertTrue(collected.isEmpty())
+        }
+
     private fun details() =
         TrainServiceDetails(
             origin = "London Waterloo",
@@ -89,8 +130,8 @@ class ServiceDetailsViewModelTest {
             time = "09:20",
             stops =
                 listOf(
-                    TrainServiceStop("London Waterloo", "09:20", "8"),
-                    TrainServiceStop("Exeter St Davids", "12:15", null),
+                    TrainServiceStop("London Waterloo", "09:20", "8", "WAT"),
+                    TrainServiceStop("Exeter St Davids", "12:15", null, "EXD"),
                 ),
         )
 }

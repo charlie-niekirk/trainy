@@ -67,6 +67,7 @@ dependencies {
     implementation(project(":feature:service-details"))
     implementation(project(":feature:service-list"))
     implementation(project(":feature:settings"))
+    implementation(project(":feature:station-details"))
     implementation(project(":feature:station-search"))
 
     // Core Android dependencies

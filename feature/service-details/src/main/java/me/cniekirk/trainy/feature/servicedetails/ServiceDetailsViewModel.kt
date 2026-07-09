@@ -7,6 +7,8 @@ import dev.zacsweers.metro.Inject
 import dev.zacsweers.metro.binding
 import dev.zacsweers.metrox.viewmodel.ViewModelKey
 import me.cniekirk.trainy.core.data.TrainRepository
+import me.cniekirk.trainy.core.data.TrainServiceStop
+import me.cniekirk.trainy.feature.stationdetails.StationDetailsRoute
 import org.orbitmvi.orbit.Container
 import org.orbitmvi.orbit.ContainerHost
 import org.orbitmvi.orbit.viewmodel.container
@@ -15,8 +17,8 @@ import org.orbitmvi.orbit.viewmodel.container
 @ViewModelKey
 @ContributesIntoMap(AppScope::class, binding<ViewModel>())
 class ServiceDetailsViewModel(private val repository: TrainRepository) :
-    ViewModel(), ContainerHost<ServiceDetailsUiState, Nothing> {
-    override val container: Container<ServiceDetailsUiState, Nothing> =
+    ViewModel(), ContainerHost<ServiceDetailsUiState, ServiceDetailsSideEffect> {
+    override val container: Container<ServiceDetailsUiState, ServiceDetailsSideEffect> =
         container(ServiceDetailsUiState())
 
     private var loadedServiceId: String? = null
@@ -33,4 +35,13 @@ class ServiceDetailsViewModel(private val repository: TrainRepository) :
     }
 
     fun retry(serviceId: String) = load(serviceId, force = true)
+
+    fun onStopSelected(stop: TrainServiceStop) = intent {
+        val crs = stop.crsCode ?: return@intent
+        postSideEffect(
+            ServiceDetailsSideEffect.NavigateToStation(
+                StationDetailsRoute(crsCode = crs, name = stop.name)
+            )
+        )
+    }
 }
