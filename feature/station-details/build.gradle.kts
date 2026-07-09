@@ -6,16 +6,20 @@ plugins {
 }
 
 android {
-    namespace = "me.cniekirk.trainy.feature.servicedetails"
+    namespace = "me.cniekirk.trainy.feature.stationdetails"
 }
 
 dependencies {
     implementation(project(":core:data"))
-    implementation(project(":feature:station-details"))
+    implementation(libs.androidx.compose.ui)
+    implementation(libs.androidx.compose.ui.text)
     implementation(libs.androidx.compose.material.icons.core)
     implementation(libs.androidx.lifecycle.viewmodel.compose)
     implementation(libs.androidx.navigation3.runtime)
-    implementation(libs.metrox.viewmodel.compose)
+    implementation(libs.metrox.viewmodel.compose) {
+        exclude(group = "org.jetbrains.compose.ui")
+        exclude(group = "org.jetbrains.compose.runtime")
+    }
     implementation(libs.orbit.compose)
     implementation(libs.orbit.viewmodel)
 

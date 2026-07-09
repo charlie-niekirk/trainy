@@ -2,12 +2,15 @@ package me.cniekirk.trainy.core.network.source
 
 import me.cniekirk.trainy.core.network.generated.model.BoardResponse
 import me.cniekirk.trainy.core.network.generated.model.ServiceResponse
+import me.cniekirk.trainy.core.network.generated.model.StationResponse
 import me.cniekirk.trainy.core.network.generated.model.StationsResponse
 import me.cniekirk.trainy.core.network.generated.model.StopsResponse
 import me.cniekirk.trainy.core.network.model.RttProxyBearerToken
 
 interface JourneyDataNetworkDataSource {
     suspend fun getStations(bearerToken: RttProxyBearerToken): StationsResponse
+
+    suspend fun getStation(bearerToken: RttProxyBearerToken, crsCode: String): StationResponse
 
     suspend fun searchStops(
         bearerToken: RttProxyBearerToken,

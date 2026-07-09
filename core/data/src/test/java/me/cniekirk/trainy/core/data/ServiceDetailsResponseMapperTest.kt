@@ -20,9 +20,9 @@ class ServiceDetailsResponseMapperTest {
         assertEquals("09:20", details?.time)
         assertEquals(
             listOf(
-                TrainServiceStop("London Waterloo", "09:20", "8"),
-                TrainServiceStop("Salisbury", "10:42", "4"),
-                TrainServiceStop("Exeter St Davids", "12:15", null),
+                TrainServiceStop("London Waterloo", "09:20", "8", "WAT"),
+                TrainServiceStop("Salisbury", "10:42", "4", "SAL"),
+                TrainServiceStop("Exeter St Davids", "12:15", null, "EXD"),
             ),
             details?.stops,
         )
@@ -42,6 +42,15 @@ class ServiceDetailsResponseMapperTest {
         assertEquals("8", details?.stops?.get(0)?.platform)
         assertEquals("4", details?.stops?.get(1)?.platform)
         assertNull(details?.stops?.get(2)?.platform)
+    }
+
+    @Test
+    fun mapsCrsCodesFromLocationShortCodes() {
+        val details = serviceResponse(SERVICE_JSON).toTrainServiceDetails()
+
+        assertEquals("WAT", details?.stops?.get(0)?.crsCode)
+        assertEquals("SAL", details?.stops?.get(1)?.crsCode)
+        assertEquals("EXD", details?.stops?.get(2)?.crsCode)
     }
 
     @Test
@@ -95,7 +104,7 @@ private const val SERVICE_JSON =
               "displayAs": "CALL",
               "departure": { "scheduleAdvertised": "2026-06-19T09:20:00Z" }
             },
-            "location": { "description": "London Waterloo" },
+            "location": { "description": "London Waterloo", "shortCodes": ["WAT"] },
             "locationMetadata": {
               "platform": { "planned": "6", "forecast": "7", "actual": "8" }
             }
@@ -105,7 +114,7 @@ private const val SERVICE_JSON =
               "displayAs": "PASS",
               "pass": { "scheduleAdvertised": "2026-06-19T10:00:00Z" }
             },
-            "location": { "description": "Andover" }
+            "location": { "description": "Andover", "shortCodes": ["ADV"] }
           },
           {
             "temporalData": {
@@ -113,7 +122,7 @@ private const val SERVICE_JSON =
               "arrival": { "scheduleAdvertised": "2026-06-19T10:40:00Z" },
               "departure": { "scheduleAdvertised": "2026-06-19T10:42:00Z" }
             },
-            "location": { "description": "Salisbury" },
+            "location": { "description": "Salisbury", "shortCodes": ["SAL"] },
             "locationMetadata": {
               "platform": { "planned": "3", "forecast": "4" }
             }
@@ -123,7 +132,7 @@ private const val SERVICE_JSON =
               "displayAs": "CALL",
               "arrival": { "scheduleAdvertised": "2026-06-19T12:15:00Z" }
             },
-            "location": { "description": "Exeter St Davids" }
+            "location": { "description": "Exeter St Davids", "shortCodes": ["EXD"] }
           }
         ]
       }

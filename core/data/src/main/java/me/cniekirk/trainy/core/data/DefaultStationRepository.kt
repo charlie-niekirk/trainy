@@ -31,6 +31,11 @@ class DefaultStationRepository(
         return stationDao.getAll().map { Station(name = it.name, crsCode = it.crsCode) }
     }
 
+    override suspend fun getStationDetails(crsCode: String): StationDetails {
+        val token = RttProxyBearerToken(clientTokens.createClientToken().token)
+        return journeyData.getStation(token, crsCode).toStationDetails()
+    }
+
     private suspend fun refreshStations(fetchedAt: Long) {
         val token = RttProxyBearerToken(clientTokens.createClientToken().token)
         val stations =

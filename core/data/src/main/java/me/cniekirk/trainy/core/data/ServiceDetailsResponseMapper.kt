@@ -31,7 +31,12 @@ private fun JsonElement.toTrainServiceStop(): TrainServiceStop? {
     val stop = this as? JsonObject
     val temporalData = stop?.objectValue("temporalData")
     val displayAs = temporalData?.stringValue("displayAs")
-    val name = stop?.objectValue("location")?.stringValue("description")
+    val location = stop?.objectValue("location")
+    val name = location?.stringValue("description")
+    val crsCode =
+        location?.arrayValue("shortCodes")?.firstOrNull()?.jsonPrimitive?.contentOrNull?.takeIf {
+            it.isNotBlank()
+        }
     val time =
         temporalData?.objectValue("departure")?.stringValue("scheduleAdvertised")
             ?: temporalData?.objectValue("arrival")?.stringValue("scheduleAdvertised")
@@ -48,6 +53,7 @@ private fun JsonElement.toTrainServiceStop(): TrainServiceStop? {
                 platform?.stringValue("actual")
                     ?: platform?.stringValue("forecast")
                     ?: platform?.stringValue("planned"),
+            crsCode = crsCode,
         )
     }
 }
