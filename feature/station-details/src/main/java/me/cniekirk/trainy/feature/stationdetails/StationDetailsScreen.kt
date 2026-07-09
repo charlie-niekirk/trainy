@@ -216,7 +216,7 @@ private fun AlertsSection(alerts: List<StationAlert>) {
                 alert.title?.takeIf(String::isNotBlank)?.let { title ->
                     Text(title, style = MaterialTheme.typography.titleSmall)
                 }
-                Text(alert.text, style = MaterialTheme.typography.bodyMedium)
+                HtmlText(alert.text, style = MaterialTheme.typography.bodyMedium)
                 val validFrom = alert.validFrom
                 if (validFrom != null) {
                     val validTo = alert.validTo
@@ -324,7 +324,7 @@ private fun TicketsSection(section: StationTicketsSection) {
         section.londonFareZone?.let {
             FactRow(stringResource(R.string.station_details_fare_zone), it)
         }
-        section.notes?.let { Text(it, style = MaterialTheme.typography.bodyMedium) }
+        section.notes?.let { HtmlText(it, style = MaterialTheme.typography.bodyMedium) }
         section.facts.forEach { FactRow(it.label, it.value) }
     }
 }
@@ -380,8 +380,8 @@ private fun TransportLinksSection(links: List<StationTransportLink>) {
                 link.available?.let {
                     Text(availabilityLabel(it), style = MaterialTheme.typography.bodyMedium)
                 }
-                link.location?.let { Text(it, style = MaterialTheme.typography.bodyMedium) }
-                link.notes?.let { Text(it, style = MaterialTheme.typography.bodyMedium) }
+                link.location?.let { HtmlText(it, style = MaterialTheme.typography.bodyMedium) }
+                link.notes?.let { HtmlText(it, style = MaterialTheme.typography.bodyMedium) }
             }
             Spacer(Modifier.height(8.dp))
         }
@@ -449,7 +449,7 @@ private fun CyclingSection(section: StationCyclingSection) {
                 section.typesOfStorage.joinToString(", "),
             )
         }
-        section.notes?.let { Text(it, style = MaterialTheme.typography.bodyMedium) }
+        section.notes?.let { HtmlText(it, style = MaterialTheme.typography.bodyMedium) }
     }
 }
 
@@ -465,7 +465,7 @@ private fun DropOffSection(section: StationDropOffSection) {
         section.location?.let {
             FactRow(stringResource(R.string.station_details_location_label), it)
         }
-        section.notes?.let { Text(it, style = MaterialTheme.typography.bodyMedium) }
+        section.notes?.let { HtmlText(it, style = MaterialTheme.typography.bodyMedium) }
         section.points.forEach { point -> DropOffPointRow(point) }
     }
 }
@@ -494,7 +494,7 @@ private fun ToiletsSection(section: StationToiletsSection) {
         section.location?.let {
             FactRow(stringResource(R.string.station_details_location_label), it)
         }
-        section.notes?.let { Text(it, style = MaterialTheme.typography.bodyMedium) }
+        section.notes?.let { HtmlText(it, style = MaterialTheme.typography.bodyMedium) }
     }
 }
 
@@ -529,7 +529,7 @@ private fun LiftsSection(section: StationLiftsSection) {
         section.available?.let {
             Text(availabilityLabel(it), style = MaterialTheme.typography.bodyLarge)
         }
-        section.statement?.let { Text(it, style = MaterialTheme.typography.bodyMedium) }
+        section.statement?.let { HtmlText(it, style = MaterialTheme.typography.bodyMedium) }
         section.lifts.forEach { lift -> LiftInfoRow(lift) }
     }
 }
@@ -558,7 +558,7 @@ private fun StationSection(
 private fun FactRow(label: String, value: String) {
     Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
         Text(label, style = MaterialTheme.typography.labelLarge)
-        Text(value, style = MaterialTheme.typography.bodyLarge)
+        HtmlText(value, style = MaterialTheme.typography.bodyLarge)
     }
 }
 
@@ -569,8 +569,8 @@ private fun FacilityItemRow(item: StationFacilityItem) {
         item.available?.let {
             Text(availabilityLabel(it), style = MaterialTheme.typography.bodyMedium)
         }
-        item.location?.let { Text(it, style = MaterialTheme.typography.bodyMedium) }
-        item.notes?.let { Text(it, style = MaterialTheme.typography.bodyMedium) }
+        item.location?.let { HtmlText(it, style = MaterialTheme.typography.bodyMedium) }
+        item.notes?.let { HtmlText(it, style = MaterialTheme.typography.bodyMedium) }
     }
     Spacer(Modifier.height(6.dp))
 }
@@ -623,7 +623,7 @@ private fun CarParkInfoRow(carPark: StationCarParkInfo) {
         carPark.cctv?.let {
             FactRow(stringResource(R.string.station_details_cctv), yesNoLabel(it))
         }
-        carPark.notes?.let { Text(it, style = MaterialTheme.typography.bodyMedium) }
+        carPark.notes?.let { HtmlText(it, style = MaterialTheme.typography.bodyMedium) }
         carPark.charges.forEach { FactRow(it.label, it.value) }
     }
     Spacer(Modifier.height(6.dp))

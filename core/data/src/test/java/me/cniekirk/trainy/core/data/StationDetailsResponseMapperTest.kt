@@ -3,6 +3,7 @@ package me.cniekirk.trainy.core.data
 import junit.framework.TestCase.assertEquals
 import junit.framework.TestCase.assertNull
 import junit.framework.TestCase.assertTrue
+import me.cniekirk.trainy.core.network.NetworkSerialization
 import me.cniekirk.trainy.core.network.generated.model.CacheStatus
 import me.cniekirk.trainy.core.network.generated.model.NationalRailAddress
 import me.cniekirk.trainy.core.network.generated.model.NationalRailCarPark
@@ -85,14 +86,14 @@ class StationDetailsResponseMapperTest {
     }
 
     @Test
-    fun mapsAlertsAndStripsHtmlFromNotes() {
+    fun mapsAlertsAndPreservesHtmlContent() {
         val details = stationResponse().toStationDetails()
 
         assertEquals(
             listOf(
                 StationAlert(
                     title = "Lift works",
-                    text = "Platform 1 lift out of service until Friday.",
+                    text = "<p>Platform 1 lift <strong>out of service</strong> until Friday.</p>",
                     validFrom = "2026-07-01",
                     validTo = "2026-07-11",
                 )
@@ -100,16 +101,43 @@ class StationDetailsResponseMapperTest {
             details.alerts,
         )
         assertEquals(
-            "Cafe closed for refurbishment",
+            "<p>Cafe closed for <em>refurbishment</em></p>",
             details.facilities.first { it.name == "Refreshments" }.notes,
         )
     }
 
     @Test
-    fun stripHtmlPreservesSeparatorsBetweenAdjacentBlockTags() {
-        val notes = "<p>Step-free</p><p>Use the side entrance</p>".stripHtml()
+    fun decodesPayAsYouGoContactlessObject() {
+        val response =
+            NetworkSerialization.json.decodeFromString<StationResponse>(
+                """
+                {
+                  "data": {
+                    "name": "London Waterloo",
+                    "crsCode": "WAT",
+                    "ticketBuying": {
+                      "payAsYouGo": {
+                        "contactless": {
+                          "contactlessCards": false,
+                          "notes": "<p>Contactless cards accepted</p>"
+                        }
+                      }
+                    }
+                  },
+                  "meta": { "cacheStatus": "MISS" }
+                }
+                """
+            )
 
-        assertEquals("Step-free Use the side entrance", notes)
+        val details = response.toStationDetails()
+
+        assertEquals(
+            listOf(
+                StationLabeledFact("Contactless", "No"),
+                StationLabeledFact("Contactless notes", "<p>Contactless cards accepted</p>"),
+            ),
+            details.tickets?.facts,
+        )
     }
 
     @Test

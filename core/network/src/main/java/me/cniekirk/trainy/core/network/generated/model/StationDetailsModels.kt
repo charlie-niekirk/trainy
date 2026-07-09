@@ -296,13 +296,30 @@ data class NationalRailCollectOnlineBookedTickets(
 @Serializable
 data class NationalRailPayAsYouGo(
     val oyster: NationalRailOyster? = null,
-    val contactless: Boolean? = null,
+    val smartCards: NationalRailSmartCards? = null,
+    val contactless: NationalRailContactless? = null,
 )
 
 @Serializable
 data class NationalRailOyster(
     val purchaseOyster: Boolean? = null,
     val topUpOyster: NationalRailTopUpOyster? = null,
+    val useOyster: Boolean? = null,
+    val notes: String? = null,
+)
+
+@Serializable
+data class NationalRailSmartCards(
+    val smartCardsIssued: Boolean? = null,
+    val topUpSmartCard: NationalRailTopUpOyster? = null,
+    val smartcardsValidators: Boolean? = null,
+    val notes: String? = null,
+)
+
+@Serializable
+data class NationalRailContactless(
+    val contactlessCards: Boolean? = null,
+    val notes: String? = null,
 )
 
 @Serializable

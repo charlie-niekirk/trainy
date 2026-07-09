@@ -43,7 +43,7 @@ internal fun NationalRailStation.toStationDetails(): StationDetails =
                 StationAlert(
                     title =
                         it.title?.takeIf(String::isNotBlank) ?: it.name?.takeIf(String::isNotBlank),
-                    text = it.alertText.stripHtml(),
+                    text = it.alertText,
                     validFrom = it.validFrom?.takeIf(String::isNotBlank),
                     validTo = it.validTo?.takeIf(String::isNotBlank),
                 )
@@ -90,9 +90,9 @@ private fun NationalRailStationAccessibility.toAccessibilitySection():
     val section =
         StationAccessibilitySection(
             stepFreeCategory = stepFreeCategory?.category?.takeIf(String::isNotBlank),
-            stepFreeNotes = stepFreeCategory?.notes?.stripHtml()?.takeIf(String::isNotBlank),
+            stepFreeNotes = stepFreeCategory?.notes?.takeIf(String::isNotBlank),
             wheelchairsAvailable = wheelchairsAvailable,
-            tactilePaving = tactilePaving?.stripHtml()?.takeIf(String::isNotBlank),
+            tactilePaving = tactilePaving?.takeIf(String::isNotBlank),
             facts = accessibilityFacts(),
         )
 
@@ -109,16 +109,16 @@ private fun NationalRailStationAccessibility.accessibilityFacts(): List<StationL
         addOptionalFact("Ticket barriers", ticketBarriers?.available?.toYesNo())
         addOptionalFact(
             "Ticket barrier notes",
-            ticketBarriers?.notes?.stripHtml()?.takeIf(String::isNotBlank),
+            ticketBarriers?.notes?.takeIf(String::isNotBlank),
         )
         addOptionalFact("Train ramp", trainRamp?.available?.toYesNo())
         addOptionalFact(
             "Induction loop",
-            inductionLoop?.provision?.takeIf(String::isNotBlank)?.stripHtml(),
+            inductionLoop?.provision?.takeIf(String::isNotBlank),
         )
         addOptionalFact(
             "Escalators",
-            escalatorInformation?.takeIf(String::isNotBlank)?.stripHtml(),
+            escalatorInformation?.takeIf(String::isNotBlank),
         )
         addAll(passengerAssistance.orEmpty().mapNotNull { it.toAssistanceFact() })
         addAll(
@@ -128,7 +128,7 @@ private fun NationalRailStationAccessibility.accessibilityFacts(): List<StationL
         )
         addOptionalFact(
             "Nearest accessible notes",
-            nearestAccessibleStations?.notes?.stripHtml()?.takeIf(String::isNotBlank),
+            nearestAccessibleStations?.notes?.takeIf(String::isNotBlank),
         )
     }
 
@@ -138,7 +138,7 @@ private fun NationalRailPassengerAssistance.toAssistanceFact(): StationLabeledFa
         listOfNotNull(
                 available?.toYesNo(),
                 location?.takeIf(String::isNotBlank),
-                notes?.stripHtml()?.takeIf(String::isNotBlank),
+                notes?.takeIf(String::isNotBlank),
             )
             .joinToString(" · ")
             .ifBlank { available?.toYesNo().orEmpty() }
@@ -185,7 +185,7 @@ private fun MutableList<StationFacilityItem>.addFacility(
         StationFacilityItem(
             name = name,
             available = facility.available,
-            notes = facility.notes?.stripHtml()?.takeIf(String::isNotBlank),
+            notes = facility.notes?.takeIf(String::isNotBlank),
             location = facility.location?.takeIf(String::isNotBlank),
         )
     )
@@ -204,8 +204,13 @@ private fun NationalRailTicketBuying.toTicketsSection(): StationTicketsSection? 
         collectOnlineBookedTickets?.pickUpAtTicketMachine?.let {
             add(StationLabeledFact("Collect at ticket machine", it.toYesNo()))
         }
-        payAsYouGo?.contactless?.let {
-            add(StationLabeledFact("Contactless", it.toYesNo()))
+        payAsYouGo?.contactless?.let { contactless ->
+            contactless.contactlessCards?.let {
+                add(StationLabeledFact("Contactless", it.toYesNo()))
+            }
+            contactless.notes?.takeIf(String::isNotBlank)?.let {
+                add(StationLabeledFact("Contactless notes", it))
+            }
         }
         payAsYouGo?.oyster?.purchaseOyster?.let {
             add(StationLabeledFact("Purchase Oyster", it.toYesNo()))
@@ -234,8 +239,8 @@ private fun NationalRailTicketBuying.toTicketsSection(): StationTicketsSection? 
             londonFareZone = londonFareZone?.takeIf(String::isNotBlank),
             notes =
                 listOfNotNull(
-                        ticketSalesNotes?.stripHtml()?.takeIf(String::isNotBlank),
-                        ticketOffice?.notes?.stripHtml()?.takeIf(String::isNotBlank),
+                        ticketSalesNotes?.takeIf(String::isNotBlank),
+                        ticketOffice?.notes?.takeIf(String::isNotBlank),
                     )
                     .joinToString("\n")
                     .ifBlank { null },
@@ -257,7 +262,7 @@ private fun NationalRailLoungeAndWaiting.toWaitingSection(): StationWaitingSecti
                 StationFacilityItem(
                     name = "Waiting facility",
                     available = it.available,
-                    notes = it.notes?.stripHtml()?.takeIf(String::isNotBlank),
+                    notes = it.notes?.takeIf(String::isNotBlank),
                     location = it.location?.takeIf(String::isNotBlank),
                 )
             )
@@ -267,7 +272,7 @@ private fun NationalRailLoungeAndWaiting.toWaitingSection(): StationWaitingSecti
                 StationFacilityItem(
                     name = "Seating area",
                     available = it.available,
-                    notes = it.notes?.stripHtml()?.takeIf(String::isNotBlank),
+                    notes = it.notes?.takeIf(String::isNotBlank),
                     location = it.location?.takeIf(String::isNotBlank),
                 )
             )
@@ -277,7 +282,7 @@ private fun NationalRailLoungeAndWaiting.toWaitingSection(): StationWaitingSecti
                 StationFacilityItem(
                     name = "First class",
                     available = it.available,
-                    notes = it.notes?.stripHtml()?.takeIf(String::isNotBlank),
+                    notes = it.notes?.takeIf(String::isNotBlank),
                     location = it.location?.takeIf(String::isNotBlank),
                 )
             )
@@ -288,10 +293,10 @@ private fun NationalRailLoungeAndWaiting.toWaitingSection(): StationWaitingSecti
 
     val facts = buildList {
         quietRoom?.takeIf(String::isNotBlank)?.let {
-            add(StationLabeledFact("Quiet room", it.stripHtml()))
+            add(StationLabeledFact("Quiet room", it))
         }
         faithRoom?.takeIf(String::isNotBlank)?.let {
-            add(StationLabeledFact("Faith room", it.stripHtml()))
+            add(StationLabeledFact("Faith room", it))
         }
     }
 
@@ -312,7 +317,7 @@ private fun NationalRailNamedFacility.toFacilityItem(fallbackName: String): Stat
     return StationFacilityItem(
         name = name?.takeIf(String::isNotBlank) ?: fallbackName,
         available = available,
-        notes = notes?.stripHtml()?.takeIf(String::isNotBlank),
+        notes = notes?.takeIf(String::isNotBlank),
         location = location?.takeIf(String::isNotBlank),
     )
 }
@@ -325,8 +330,8 @@ private fun NationalRailPlatformFacilities.toPlatformsSection(): StationPlatform
     val section =
         StationPlatformsSection(
             numberOfPlatforms = numberOfPlatforms?.toInt(),
-            entranceLevels = entranceLevels?.stripHtml()?.takeIf(String::isNotBlank),
-            tactileWarnings = tactileWarnings?.stripHtml()?.takeIf(String::isNotBlank),
+            entranceLevels = entranceLevels?.takeIf(String::isNotBlank),
+            tactileWarnings = tactileWarnings?.takeIf(String::isNotBlank),
             platforms = platforms,
         )
     return section.takeUnless { it.isEmpty() }
@@ -352,7 +357,7 @@ private fun NationalRailTransportLinks.toTransportLinks(): List<StationTransport
             StationTransportLink(
                 name = "Replacement bus",
                 available = it.available,
-                notes = it.notes?.stripHtml()?.takeIf(String::isNotBlank),
+                notes = it.notes?.takeIf(String::isNotBlank),
                 location = it.location?.takeIf(String::isNotBlank),
             )
         )
@@ -362,7 +367,7 @@ private fun NationalRailTransportLinks.toTransportLinks(): List<StationTransport
             StationTransportLink(
                 name = "Bus",
                 available = it.available,
-                notes = it.notes?.stripHtml()?.takeIf(String::isNotBlank),
+                notes = it.notes?.takeIf(String::isNotBlank),
             )
         )
     }
@@ -371,7 +376,7 @@ private fun NationalRailTransportLinks.toTransportLinks(): List<StationTransport
             StationTransportLink(
                 name = "Underground",
                 available = it.available,
-                notes = it.notes?.stripHtml()?.takeIf(String::isNotBlank),
+                notes = it.notes?.takeIf(String::isNotBlank),
             )
         )
     }
@@ -380,7 +385,7 @@ private fun NationalRailTransportLinks.toTransportLinks(): List<StationTransport
             StationTransportLink(
                 name = "Airport",
                 available = it.available,
-                notes = it.notes?.stripHtml()?.takeIf(String::isNotBlank),
+                notes = it.notes?.takeIf(String::isNotBlank),
             )
         )
     }
@@ -389,7 +394,7 @@ private fun NationalRailTransportLinks.toTransportLinks(): List<StationTransport
             StationTransportLink(
                 name = "Port",
                 available = it.available,
-                notes = it.notes?.stripHtml()?.takeIf(String::isNotBlank),
+                notes = it.notes?.takeIf(String::isNotBlank),
             )
         )
     }
@@ -398,7 +403,7 @@ private fun NationalRailTransportLinks.toTransportLinks(): List<StationTransport
             StationTransportLink(
                 name = "Car hire",
                 available = it.available,
-                notes = it.notes?.stripHtml()?.takeIf(String::isNotBlank),
+                notes = it.notes?.takeIf(String::isNotBlank),
             )
         )
     }
@@ -407,7 +412,7 @@ private fun NationalRailTransportLinks.toTransportLinks(): List<StationTransport
             StationTransportLink(
                 name = "Taxi",
                 available = it.available,
-                notes = it.notes?.stripHtml()?.takeIf(String::isNotBlank),
+                notes = it.notes?.takeIf(String::isNotBlank),
             )
         )
     }
@@ -438,7 +443,7 @@ private fun NationalRailCarPark.toCarParkInfo(): StationCarParkInfo? {
         numberOfAccessibleSpaces = numberOfAccessibleSpaces?.toInt(),
         freeParking = freeParking,
         cctv = cctv,
-        notes = notes?.stripHtml()?.takeIf(String::isNotBlank),
+        notes = notes?.takeIf(String::isNotBlank),
         charges = charges,
     )
 }
@@ -476,8 +481,8 @@ private fun NationalRailCycling.toCyclingSection(): StationCyclingSection? {
             typesOfStorage = typesOfStorage.orEmpty().filter { it.isNotBlank() },
             notes =
                 listOfNotNull(
-                        spaces?.notes?.stripHtml()?.takeIf(String::isNotBlank),
-                        cycleHireNotes?.stripHtml()?.takeIf(String::isNotBlank),
+                        spaces?.notes?.takeIf(String::isNotBlank),
+                        cycleHireNotes?.takeIf(String::isNotBlank),
                     )
                     .joinToString("\n")
                     .ifBlank { null },
@@ -496,7 +501,7 @@ private fun NationalRailDropOffPickUp.toDropOffSection(): StationDropOffSection?
         StationDropOffSection(
             available = available,
             location = location?.takeIf(String::isNotBlank),
-            notes = notes?.stripHtml()?.takeIf(String::isNotBlank),
+            notes = notes?.takeIf(String::isNotBlank),
             points = points,
         )
     return section.takeUnless { it.isEmpty() }
@@ -538,7 +543,7 @@ private fun NationalRailToiletsAndChanging.toToiletsSection(): StationToiletsSec
             accessibleToiletsAvailable = toilets.accessibleToiletsAvailable,
             changingPlacesAvailable = toilets.changingPlacesToiletsAvailable,
             location = toilets.location?.takeIf(String::isNotBlank),
-            notes = toilets.notes?.stripHtml()?.takeIf(String::isNotBlank),
+            notes = toilets.notes?.takeIf(String::isNotBlank),
         )
     return section.takeUnless { it.isEmpty() }
 }
@@ -560,8 +565,8 @@ private fun helpSection(
             helpPointsAvailable = helpPoints?.available,
             helpPointsLocation = helpPoints?.location?.takeIf(String::isNotBlank),
             announcements =
-                helpAndSupport?.announcements?.stripHtml()?.takeIf(String::isNotBlank)
-                    ?: staffAssistance?.announcements?.stripHtml()?.takeIf(String::isNotBlank),
+                helpAndSupport?.announcements?.takeIf(String::isNotBlank)
+                    ?: staffAssistance?.announcements?.takeIf(String::isNotBlank),
             facts = helpFacts(helpAndSupport, staffAssistance, helpPoints),
         )
 
@@ -580,19 +585,19 @@ private fun helpFacts(
 ): List<StationLabeledFact> = buildList {
     addOptionalFact(
         "Induction loops",
-        helpAndSupport?.inductionLoops?.takeIf(String::isNotBlank)?.stripHtml(),
+        helpAndSupport?.inductionLoops?.takeIf(String::isNotBlank),
     )
     addOptionalFact(
         "Printed local information",
-        helpAndSupport?.printedLocalInformation?.takeIf(String::isNotBlank)?.stripHtml(),
+        helpAndSupport?.printedLocalInformation?.takeIf(String::isNotBlank),
     )
     addOptionalFact(
         "Information points",
-        helpAndSupport?.informationPoints?.takeIf(String::isNotBlank)?.stripHtml(),
+        helpAndSupport?.informationPoints?.takeIf(String::isNotBlank),
     )
     addOptionalFact(
         "Accessibility information",
-        helpAndSupport?.accessibilityInformation?.takeIf(String::isNotBlank)?.stripHtml(),
+        helpAndSupport?.accessibilityInformation?.takeIf(String::isNotBlank),
     )
     addJoinedFact(
         "Customer information screens",
@@ -607,15 +612,15 @@ private fun helpFacts(
         val value =
             listOfNotNull(
                     helpline.available?.toYesNo(),
-                    helpline.notes?.stripHtml()?.takeIf(String::isNotBlank),
+                    helpline.notes?.takeIf(String::isNotBlank),
                 )
                 .joinToString(" · ")
         addOptionalFact("Helpline", value)
     }
-    addOptionalFact("Help point notes", helpPoints?.notes?.stripHtml()?.takeIf(String::isNotBlank))
+    addOptionalFact("Help point notes", helpPoints?.notes?.takeIf(String::isNotBlank))
     addOptionalFact(
         "Help point induction loop",
-        helpPoints?.inductionLoop?.takeIf(String::isNotBlank)?.stripHtml(),
+        helpPoints?.inductionLoop?.takeIf(String::isNotBlank),
     )
 }
 
@@ -631,7 +636,7 @@ private fun NationalRailLifts.toLiftsSection(): StationLiftsSection? {
     val section =
         StationLiftsSection(
             available = available,
-            statement = statement?.stripHtml()?.takeIf(String::isNotBlank),
+            statement = statement?.takeIf(String::isNotBlank),
             lifts = lifts,
         )
     return section.takeUnless {
@@ -643,32 +648,19 @@ private fun NationalRailLift.toLiftInfo(): StationLiftInfo? {
     val resolvedName = name?.takeIf(String::isNotBlank) ?: return null
     val facts = buildList {
         operationalAnnouncements?.takeIf(String::isNotBlank)?.let {
-            add(StationLabeledFact("Announcements", it.stripHtml()))
+            add(StationLabeledFact("Announcements", it))
         }
         liftControls?.takeIf(String::isNotBlank)?.let {
-            add(StationLabeledFact("Controls", it.stripHtml()))
+            add(StationLabeledFact("Controls", it))
         }
         liftManoeuvrability?.takeIf(String::isNotBlank)?.let {
-            add(StationLabeledFact("Manoeuvrability", it.stripHtml()))
+            add(StationLabeledFact("Manoeuvrability", it))
         }
         openingWidth?.takeIf(String::isNotBlank)?.let {
-            add(StationLabeledFact("Opening width", it.stripHtml()))
+            add(StationLabeledFact("Opening width", it))
         }
     }
     return StationLiftInfo(name = resolvedName, facts = facts)
 }
 
 private fun Boolean.toYesNo(): String = if (this) "Yes" else "No"
-
-internal fun String.stripHtml(): String =
-    replace(HTML_TAG_REGEX, " ")
-        .replace("&nbsp;", " ")
-        .replace("&amp;", "&")
-        .replace("&lt;", "<")
-        .replace("&gt;", ">")
-        .replace("&quot;", "\"")
-        .trim()
-        .replace(WHITESPACE_REGEX, " ")
-
-private val HTML_TAG_REGEX = Regex("<[^>]+>")
-private val WHITESPACE_REGEX = Regex("\\s+")
