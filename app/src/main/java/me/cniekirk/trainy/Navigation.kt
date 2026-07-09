@@ -14,6 +14,7 @@ import me.cniekirk.trainy.feature.search.searchEntry
 import me.cniekirk.trainy.feature.servicedetails.serviceDetailsEntry
 import me.cniekirk.trainy.feature.servicelist.serviceListEntry
 import me.cniekirk.trainy.feature.settings.settingsEntry
+import me.cniekirk.trainy.feature.stationdetails.stationDetailsEntry
 import me.cniekirk.trainy.feature.stationsearch.stationSearchEntry
 import me.cniekirk.trainy.navigation.AppNavigator
 import me.cniekirk.trainy.navigation.TopLevelDestinations
@@ -34,7 +35,11 @@ fun MainNavigation(modifier: Modifier = Modifier) {
         )
         favouritesEntry(onServiceClick = navigator::navigate)
         settingsEntry()
-        serviceDetailsEntry(onBackClick = navigator::goBack)
+        serviceDetailsEntry(
+            onBackClick = navigator::goBack,
+            onStationClick = navigator::navigate,
+        )
+        stationDetailsEntry(onBackClick = navigator::goBack)
         serviceListEntry(
             onBackClick = navigator::goBack,
             onServiceClick = navigator::navigate,

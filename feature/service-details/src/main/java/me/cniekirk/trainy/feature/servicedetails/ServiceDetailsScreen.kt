@@ -1,6 +1,7 @@
 package me.cniekirk.trainy.feature.servicedetails
 
 import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -36,6 +37,7 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
@@ -44,22 +46,32 @@ import androidx.compose.ui.unit.dp
 import dev.zacsweers.metrox.viewmodel.metroViewModel
 import me.cniekirk.trainy.core.data.TrainServiceDetails
 import me.cniekirk.trainy.core.data.TrainServiceStop
+import me.cniekirk.trainy.feature.stationdetails.StationDetailsRoute
 import org.orbitmvi.orbit.compose.collectAsState
+import org.orbitmvi.orbit.compose.collectSideEffect
 
 @Composable
 internal fun ServiceDetailsScreen(
     serviceId: String,
     onBackClick: () -> Unit,
+    onStationClick: (StationDetailsRoute) -> Unit,
     modifier: Modifier = Modifier,
     viewModel: ServiceDetailsViewModel = metroViewModel(),
 ) {
     val state by viewModel.collectAsState()
     LaunchedEffect(serviceId) { viewModel.load(serviceId) }
 
+    viewModel.collectSideEffect { sideEffect ->
+        when (sideEffect) {
+            is ServiceDetailsSideEffect.NavigateToStation -> onStationClick(sideEffect.route)
+        }
+    }
+
     ServiceDetailsContent(
         state = state,
         onBackClick = onBackClick,
         onRetry = { viewModel.retry(serviceId) },
+        onStopClick = viewModel::onStopSelected,
         modifier = modifier,
     )
 }
@@ -70,6 +82,7 @@ internal fun ServiceDetailsContent(
     state: ServiceDetailsUiState,
     onBackClick: () -> Unit,
     onRetry: () -> Unit,
+    onStopClick: (TrainServiceStop) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Scaffold(
@@ -100,7 +113,8 @@ internal fun ServiceDetailsContent(
                         onRetry = onRetry,
                         modifier = Modifier.align(Alignment.Center),
                     )
-                state.details != null -> ServiceTimeline(state.details)
+                state.details != null ->
+                    ServiceTimeline(details = state.details, onStopClick = onStopClick)
             }
         }
     }
@@ -119,7 +133,10 @@ private fun ServiceDetailsError(onRetry: () -> Unit, modifier: Modifier = Modifi
 }
 
 @Composable
-private fun ServiceTimeline(details: TrainServiceDetails) {
+private fun ServiceTimeline(
+    details: TrainServiceDetails,
+    onStopClick: (TrainServiceStop) -> Unit,
+) {
     LazyColumn(
         modifier = Modifier.fillMaxSize().testTag("service-details-timeline"),
         contentPadding =
@@ -159,6 +176,7 @@ private fun ServiceTimeline(details: TrainServiceDetails) {
                 stopCount = details.stops.size,
                 isFirst = index == 0,
                 isLast = index == details.stops.lastIndex,
+                onClick = { onStopClick(stop) },
             )
         }
     }
@@ -171,6 +189,7 @@ private fun ServiceStopRow(
     stopCount: Int,
     isFirst: Boolean,
     isLast: Boolean,
+    onClick: () -> Unit,
 ) {
     val description =
         stringResource(R.string.service_details_stop_description, stop.name, index + 1, stopCount)
@@ -179,6 +198,7 @@ private fun ServiceStopRow(
             Modifier.fillMaxWidth()
                 .height(IntrinsicSize.Min)
                 .defaultMinSize(minHeight = 72.dp)
+                .clickable(enabled = stop.crsCode != null, role = Role.Button, onClick = onClick)
                 .testTag("service-stop-$index-${stop.name}")
                 .semantics { contentDescription = description },
         verticalAlignment = Alignment.CenterVertically,
@@ -264,6 +284,7 @@ private fun ServiceDetailsContentPreview() {
                 ),
             onBackClick = {},
             onRetry = {},
+            onStopClick = {},
         )
     }
 }
