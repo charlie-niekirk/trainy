@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="station_details_title">Station details</string>
+    <string name="station_details_back_button">Back</string>
+    <string name="station_details_error">Unable to load station details</string>
+    <string name="station_details_retry">Try again</string>
+    <string name="station_details_crs">CRS %1$s</string>
+    <string name="station_details_operator">Operator: %1$s</string>
+    <string name="station_details_staffing">Staffing: %1$s</string>
+    <string name="station_details_section_alerts">Alerts</string>
+    <string name="station_details_section_address">Address</string>
+    <string name="station_details_section_accessibility">Accessibility</string>
+    <string name="station_details_section_facilities">Facilities</string>
+    <string name="station_details_section_tickets">Tickets</string>
+    <string name="station_details_section_waiting">Waiting</string>
+    <string name="station_details_section_platforms">Platforms</string>
+    <string name="station_details_section_transport">Transport links</string>
+    <string name="station_details_section_car_parks">Car parks</string>
+    <string name="station_details_section_cycling">Cycling</string>
+    <string name="station_details_section_drop_off">Drop-off / pick-up</string>
+    <string name="station_details_section_toilets">Toilets</string>
+    <string name="station_details_section_help">Help</string>
+    <string name="station_details_section_lifts">Lifts</string>
+    <string name="station_details_coordinates">%1$.5f, %2$.5f</string>
+    <string name="station_details_available_yes">Available</string>
+    <string name="station_details_available_no">Not available</string>
+    <string name="station_details_yes">Yes</string>
+    <string name="station_details_no">No</string>
+    <string name="station_details_platforms_count">%1$d platforms</string>
+    <string name="station_details_spaces">%1$d spaces</string>
+    <string name="station_details_accessible_spaces">%1$d accessible spaces</string>
+</resources>
