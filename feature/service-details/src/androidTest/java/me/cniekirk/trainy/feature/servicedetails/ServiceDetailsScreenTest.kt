@@ -12,6 +12,8 @@ import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import me.cniekirk.trainy.core.data.TrainServiceDetails
 import me.cniekirk.trainy.core.data.TrainServiceStop
+import org.junit.Assert.assertEquals
+import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
 import org.junit.Rule
 import org.junit.Test
@@ -70,10 +72,47 @@ class ServiceDetailsScreenTest {
         rule.onNodeWithContentDescription("Exeter St Davids, stop 3 of 3").assertIsDisplayed()
     }
 
+    @Test
+    fun stopWithCrs_invokesOnStopClick() {
+        var selected: TrainServiceStop? = null
+        setContent(
+            ServiceDetailsUiState(details = details(), isLoading = false),
+            onStopClick = { selected = it },
+        )
+
+        rule.onNodeWithTag("service-stop-1-Salisbury").performClick()
+
+        assertEquals(TrainServiceStop("Salisbury", "10:42", "4", "SAL"), selected)
+    }
+
+    @Test
+    fun stopWithoutCrs_doesNotInvokeOnStopClick() {
+        var selected: TrainServiceStop? = null
+        setContent(
+            ServiceDetailsUiState(
+                details =
+                    TrainServiceDetails(
+                        origin = "A",
+                        destination = "B",
+                        operatorName = "Operator",
+                        time = "09:00",
+                        stops = listOf(TrainServiceStop("Unknown", "09:00", null, null)),
+                    ),
+                isLoading = false,
+            ),
+            onStopClick = { selected = it },
+        )
+
+        rule.onNodeWithTag("service-stop-0-Unknown").performClick()
+
+        assertNull(selected)
+    }
+
     private fun setContent(
         state: ServiceDetailsUiState,
         onBackClick: () -> Unit = {},
         onRetry: () -> Unit = {},
+        onStopClick: (TrainServiceStop) -> Unit = {},
     ) {
         rule.setContent {
             MaterialTheme {
@@ -81,6 +120,7 @@ class ServiceDetailsScreenTest {
                     state = state,
                     onBackClick = onBackClick,
                     onRetry = onRetry,
+                    onStopClick = onStopClick,
                 )
             }
         }
