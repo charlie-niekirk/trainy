@@ -59,9 +59,15 @@ class ServiceDetailsScreenTest {
         rule.onNodeWithText("Platform 8").assertIsDisplayed()
         rule.onNodeWithText("Platform 4").assertIsDisplayed()
         // Nested tags sit under the clickable stop row, so query the unmerged tree.
-        rule.onAllNodesWithTag("service-stop-platform-0", useUnmergedTree = true).assertCountEquals(1)
-        rule.onAllNodesWithTag("service-stop-platform-1", useUnmergedTree = true).assertCountEquals(1)
-        rule.onAllNodesWithTag("service-stop-platform-2", useUnmergedTree = true).assertCountEquals(0)
+        rule
+            .onAllNodesWithTag("service-stop-platform-0", useUnmergedTree = true)
+            .assertCountEquals(1)
+        rule
+            .onAllNodesWithTag("service-stop-platform-1", useUnmergedTree = true)
+            .assertCountEquals(1)
+        rule
+            .onAllNodesWithTag("service-stop-platform-2", useUnmergedTree = true)
+            .assertCountEquals(0)
     }
 
     @Test
