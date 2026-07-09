@@ -58,16 +58,17 @@ class ServiceDetailsScreenTest {
         rule.onNodeWithTag("service-stop-2-Exeter St Davids").assertIsDisplayed()
         rule.onNodeWithText("Platform 8").assertIsDisplayed()
         rule.onNodeWithText("Platform 4").assertIsDisplayed()
-        rule.onAllNodesWithTag("service-stop-platform-0").assertCountEquals(1)
-        rule.onAllNodesWithTag("service-stop-platform-1").assertCountEquals(1)
-        rule.onAllNodesWithTag("service-stop-platform-2").assertCountEquals(0)
+        // Nested tags sit under the clickable stop row, so query the unmerged tree.
+        rule.onAllNodesWithTag("service-stop-platform-0", useUnmergedTree = true).assertCountEquals(1)
+        rule.onAllNodesWithTag("service-stop-platform-1", useUnmergedTree = true).assertCountEquals(1)
+        rule.onAllNodesWithTag("service-stop-platform-2", useUnmergedTree = true).assertCountEquals(0)
     }
 
     @Test
     fun timeline_hasOneAccessibleMarkerForEachStop() {
         setContent(ServiceDetailsUiState(details = details(), isLoading = false))
 
-        rule.onAllNodesWithTag("timeline-marker").assertCountEquals(3)
+        rule.onAllNodesWithTag("timeline-marker", useUnmergedTree = true).assertCountEquals(3)
         rule.onNodeWithContentDescription("London Waterloo, stop 1 of 3").assertIsDisplayed()
         rule.onNodeWithContentDescription("Exeter St Davids, stop 3 of 3").assertIsDisplayed()
     }
