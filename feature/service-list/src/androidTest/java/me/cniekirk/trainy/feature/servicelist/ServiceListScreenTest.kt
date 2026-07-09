@@ -51,6 +51,7 @@ class ServiceListScreenTest {
                     state = ServiceListUiState(services = services, isLoading = false),
                     onBackClick = {},
                     onRetry = {},
+                    onServiceClick = {},
                     onTrackClick = {},
                 )
             }
@@ -90,6 +91,7 @@ class ServiceListScreenTest {
                     state = ServiceListUiState(isLoading = false, hasError = true),
                     onBackClick = {},
                     onRetry = { retried = true },
+                    onServiceClick = {},
                     onTrackClick = {},
                 )
             }
@@ -112,6 +114,7 @@ class ServiceListScreenTest {
                 operatorName = "South Western Railway",
             )
         var trackedService: TrainService? = null
+        var selectedService: TrainService? = null
 
         rule.setContent {
             MaterialTheme {
@@ -125,6 +128,7 @@ class ServiceListScreenTest {
                         ),
                     onBackClick = {},
                     onRetry = {},
+                    onServiceClick = { selectedService = it },
                     onTrackClick = { trackedService = it },
                 )
             }
@@ -137,6 +141,7 @@ class ServiceListScreenTest {
             .performClick()
 
         assertTrue(trackedService == service)
+        assertTrue(selectedService == null)
     }
 
     @Test
@@ -163,6 +168,7 @@ class ServiceListScreenTest {
                         ),
                     onBackClick = {},
                     onRetry = {},
+                    onServiceClick = {},
                     onTrackClick = {},
                 )
             }
@@ -172,6 +178,36 @@ class ServiceListScreenTest {
             .onNodeWithContentDescription("Remove tracked service to Exeter St Davids")
             .assertIsDisplayed()
             .assertIsOn()
+    }
+
+    @Test
+    fun serviceRowClick_selectsExactService() {
+        val service =
+            TrainService(
+                id = "gb-nr:L79342:2026-06-19",
+                time = "09:20",
+                destination = "Exeter St Davids",
+                platform = "8",
+                isPlatformConfirmed = false,
+                operatorName = "South Western Railway",
+            )
+        var selectedService: TrainService? = null
+        rule.setContent {
+            MaterialTheme {
+                ServiceListContent(
+                    search = departingSearch(),
+                    state = ServiceListUiState(services = listOf(service), isLoading = false),
+                    onBackClick = {},
+                    onRetry = {},
+                    onServiceClick = { selectedService = it },
+                    onTrackClick = {},
+                )
+            }
+        }
+
+        rule.onNodeWithText("Exeter St Davids").performClick()
+
+        assertTrue(selectedService == service)
     }
 
     private fun departingSearch() =

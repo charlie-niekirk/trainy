@@ -11,6 +11,7 @@ android {
 
 dependencies {
     implementation(project(":core:data"))
+    implementation(project(":feature:service-details"))
     implementation(libs.androidx.compose.material.icons.core)
     implementation(libs.androidx.lifecycle.viewmodel.compose)
     implementation(libs.androidx.navigation3.runtime)

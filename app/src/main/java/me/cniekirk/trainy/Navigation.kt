@@ -35,7 +35,10 @@ fun MainNavigation(modifier: Modifier = Modifier) {
         favouritesEntry(onServiceClick = navigator::navigate)
         settingsEntry()
         serviceDetailsEntry(onBackClick = navigator::goBack)
-        serviceListEntry(onBackClick = navigator::goBack)
+        serviceListEntry(
+            onBackClick = navigator::goBack,
+            onServiceClick = navigator::navigate,
+        )
         stationSearchEntry(onBackClick = navigator::goBack)
     }
 

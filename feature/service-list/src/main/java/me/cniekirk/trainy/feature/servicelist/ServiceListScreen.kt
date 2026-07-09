@@ -1,5 +1,6 @@
 package me.cniekirk.trainy.feature.servicelist
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -34,6 +35,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.stateDescription
 import androidx.compose.ui.text.font.FontWeight
@@ -47,6 +49,7 @@ import org.orbitmvi.orbit.compose.collectSideEffect
 internal fun ServiceListScreen(
     route: ServiceListRoute,
     onBackClick: () -> Unit,
+    onServiceClick: (TrainService) -> Unit = {},
     modifier: Modifier = Modifier,
     viewModel: ServiceListViewModel = metroViewModel(),
 ) {
@@ -67,6 +70,7 @@ internal fun ServiceListScreen(
         state = state,
         onBackClick = onBackClick,
         onRetry = { viewModel.retry(route.search) },
+        onServiceClick = onServiceClick,
         onTrackClick = viewModel::onTrackingClick,
         snackbarHost = { SnackbarHost(snackbarHostState) },
         modifier = modifier,
@@ -80,6 +84,7 @@ internal fun ServiceListContent(
     state: ServiceListUiState,
     onBackClick: () -> Unit,
     onRetry: () -> Unit,
+    onServiceClick: (TrainService) -> Unit,
     onTrackClick: (TrainService) -> Unit,
     modifier: Modifier = Modifier,
     snackbarHost: @Composable () -> Unit = {},
@@ -117,7 +122,13 @@ internal fun ServiceListContent(
                     Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                         Text(stringResource(R.string.service_list_empty))
                     }
-                else -> ServiceList(state.services, state.trackedServiceIds, onTrackClick)
+                else ->
+                    ServiceList(
+                        services = state.services,
+                        trackedServiceIds = state.trackedServiceIds,
+                        onServiceClick = onServiceClick,
+                        onTrackClick = onTrackClick,
+                    )
             }
         }
     }
@@ -127,6 +138,7 @@ internal fun ServiceListContent(
 private fun ServiceList(
     services: List<TrainService>,
     trackedServiceIds: Set<String>,
+    onServiceClick: (TrainService) -> Unit,
     onTrackClick: (TrainService) -> Unit,
 ) {
     LazyColumn(Modifier.fillMaxSize().testTag("service-list")) {
@@ -134,6 +146,7 @@ private fun ServiceList(
             ServiceListItem(
                 service = service,
                 isTracked = service.id in trackedServiceIds,
+                onServiceClick = onServiceClick,
                 onTrackClick = onTrackClick,
             )
             HorizontalDivider()
@@ -145,10 +158,14 @@ private fun ServiceList(
 private fun ServiceListItem(
     service: TrainService,
     isTracked: Boolean,
+    onServiceClick: (TrainService) -> Unit,
     onTrackClick: (TrainService) -> Unit,
 ) {
     Row(
-        modifier = Modifier.fillMaxWidth().padding(horizontal = 20.dp, vertical = 16.dp),
+        modifier =
+            Modifier.fillMaxWidth()
+                .clickable(role = Role.Button) { onServiceClick(service) }
+                .padding(horizontal = 20.dp, vertical = 16.dp),
         horizontalArrangement = Arrangement.spacedBy(16.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
