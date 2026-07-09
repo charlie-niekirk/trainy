@@ -660,7 +660,7 @@ private fun NationalRailLift.toLiftInfo(): StationLiftInfo? {
 private fun Boolean.toYesNo(): String = if (this) "Yes" else "No"
 
 internal fun String.stripHtml(): String =
-    replace(HTML_TAG_REGEX, "")
+    replace(HTML_TAG_REGEX, " ")
         .replace("&nbsp;", " ")
         .replace("&amp;", "&")
         .replace("&lt;", "<")

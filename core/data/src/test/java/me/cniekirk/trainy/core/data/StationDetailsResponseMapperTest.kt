@@ -74,6 +74,14 @@ class StationDetailsResponseMapperTest {
     }
 
     @Test
+    fun stripHtmlPreservesSeparatorsBetweenAdjacentBlockTags() {
+        val notes =
+            "<p>Step-free</p><p>Use the side entrance</p>".stripHtml()
+
+        assertEquals("Step-free Use the side entrance", notes)
+    }
+
+    @Test
     fun mapsAccessibilityTicketsWaitingAndPlatforms() {
         val details = stationResponse().toStationDetails()
 
