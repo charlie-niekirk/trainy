@@ -2,8 +2,10 @@ package me.cniekirk.trainy.feature.stationdetails
 
 import androidx.activity.ComponentActivity
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.ui.test.assertCountEquals
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
+import androidx.compose.ui.test.onAllNodesWithText
 import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
@@ -48,7 +50,8 @@ class StationDetailsScreenTest {
         setContent(StationDetailsUiState(details = details(), isLoading = false))
 
         rule.onNodeWithTag("station-details-content").assertIsDisplayed()
-        rule.onNodeWithText("London Waterloo").assertIsDisplayed()
+        // Name appears in the top app bar and the in-content header.
+        rule.onAllNodesWithText("London Waterloo").assertCountEquals(2)
         rule.onNodeWithText("CRS WAT").assertIsDisplayed()
         rule.onNodeWithText("Operator: South Western Railway").assertIsDisplayed()
         rule.onNodeWithTag("station-section-alerts").assertIsDisplayed()
