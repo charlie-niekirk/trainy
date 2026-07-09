@@ -10,6 +10,9 @@ import me.cniekirk.trainy.core.database.CachedStationEntity
 import me.cniekirk.trainy.core.network.generated.model.CacheStatus
 import me.cniekirk.trainy.core.network.generated.model.ClientTokenResponse
 import me.cniekirk.trainy.core.network.generated.model.CollectionMeta
+import me.cniekirk.trainy.core.network.generated.model.NationalRailStation
+import me.cniekirk.trainy.core.network.generated.model.ResponseMeta
+import me.cniekirk.trainy.core.network.generated.model.StationResponse
 import me.cniekirk.trainy.core.network.generated.model.StationSummary
 import me.cniekirk.trainy.core.network.generated.model.StationsResponse
 import me.cniekirk.trainy.core.network.source.ClientTokensNetworkDataSource
@@ -54,6 +57,23 @@ class DefaultStationRepositoryTest {
 
         assertEquals(listOf(Station("London Euston", "EUS")), result)
         coVerify { dao.replaceAll(listOf(cachedStation("EUS", "London Euston"))) }
+    }
+
+    @Test
+    fun getStationDetails_mapsNetworkResponse() = runTest {
+        coEvery { tokens.createClientToken() } returns
+            ClientTokenResponse("token", ClientTokenResponse.TokenType.BEARER, "later")
+        coEvery { network.getStation(any(), "WAT") } returns
+            StationResponse(
+                data = NationalRailStation(name = "London Waterloo", crsCode = "WAT"),
+                meta = ResponseMeta(CacheStatus.MISS),
+            )
+
+        val result = repository().getStationDetails("WAT")
+
+        assertEquals("London Waterloo", result.name)
+        assertEquals("WAT", result.crsCode)
+        coVerify { network.getStation(any(), "WAT") }
     }
 
     private fun repository() = DefaultStationRepository(dao, tokens, network, clock)
