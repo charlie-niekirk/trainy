@@ -12,4 +12,5 @@ data class TrainServiceStop(
     val name: String,
     val time: String,
     val platform: String?,
+    val crsCode: String? = null,
 )

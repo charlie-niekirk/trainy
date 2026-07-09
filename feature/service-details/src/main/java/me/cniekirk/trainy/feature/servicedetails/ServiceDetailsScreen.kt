@@ -255,9 +255,9 @@ private fun ServiceDetailsContentPreview() {
                             time = "09:20",
                             stops =
                                 listOf(
-                                    TrainServiceStop("London Waterloo", "09:20", "8"),
-                                    TrainServiceStop("Salisbury", "10:42", "4"),
-                                    TrainServiceStop("Exeter St Davids", "12:15", null),
+                                    TrainServiceStop("London Waterloo", "09:20", "8", "WAT"),
+                                    TrainServiceStop("Salisbury", "10:42", "4", "SAL"),
+                                    TrainServiceStop("Exeter St Davids", "12:15", null, "EXD"),
                                 ),
                         ),
                     isLoading = false,

@@ -89,8 +89,8 @@ class ServiceDetailsViewModelTest {
             time = "09:20",
             stops =
                 listOf(
-                    TrainServiceStop("London Waterloo", "09:20", "8"),
-                    TrainServiceStop("Exeter St Davids", "12:15", null),
+                    TrainServiceStop("London Waterloo", "09:20", "8", "WAT"),
+                    TrainServiceStop("Exeter St Davids", "12:15", null, "EXD"),
                 ),
         )
 }
